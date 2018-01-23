@@ -7,11 +7,9 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
@@ -32,7 +30,7 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
     private ListView listView;
     private OnItemClickListener onItemClickListener;
     private final View masker;
-    private final View marginView;
+//    private final View marginView;
     private int marginPx;
 
     public FolderPopUpWindow(Context context, BaseAdapter adapter) {
@@ -41,33 +39,34 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         final View view = View.inflate(context, R.layout.pop_folder, null);
         masker = view.findViewById(R.id.masker);
         masker.setOnClickListener(this);
-        marginView = view.findViewById(R.id.margin);
-        marginView.setOnClickListener(this);
-        listView = (ListView) view.findViewById(R.id.listView);
+//        marginView = view.findViewById(R.id.margin);
+//        marginView.setOnClickListener(this);
+        listView = view.findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
         setContentView(view);
-        setWidth(ViewGroup.LayoutParams.MATCH_PARENT);  //如果不设置，就是 AnchorView 的宽度
+        //如果不设置，就是 AnchorView 的宽度
+        setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
         setFocusable(true);
         setOutsideTouchable(true);
         setBackgroundDrawable(new ColorDrawable(0));
-        setAnimationStyle(0);
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                int maxHeight = view.getHeight() * 5 / 8;
-                int realHeight = listView.getHeight();
-                ViewGroup.LayoutParams listParams = listView.getLayoutParams();
-                listParams.height = realHeight > maxHeight ? maxHeight : realHeight;
-                listView.setLayoutParams(listParams);
-                LinearLayout.LayoutParams marginParams = (LinearLayout.LayoutParams) marginView.getLayoutParams();
-                marginParams.height = marginPx;
-                marginView.setLayoutParams(marginParams);
-                enterAnimator();
-            }
-        });
+//        setAnimationStyle(R.style.PopupAnimation);
+//        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                int maxHeight = view.getHeight() * 5 / 8;
+//                int realHeight = listView.getHeight();
+//                ViewGroup.LayoutParams listParams = listView.getLayoutParams();
+//                listParams.height = realHeight > maxHeight ? maxHeight : realHeight;
+//                listView.setLayoutParams(listParams);
+//                LinearLayout.LayoutParams marginParams = (LinearLayout.LayoutParams) marginView.getLayoutParams();
+//                marginParams.height = marginPx;
+//                marginView.setLayoutParams(marginParams);
+////                enterAnimator();
+//            }
+//        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -77,6 +76,7 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
             }
         });
     }
+
 
     private void enterAnimator() {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(masker, "alpha", 0, 1);
@@ -88,10 +88,12 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         set.start();
     }
 
-    @Override
-    public void dismiss() {
-        exitAnimator();
-    }
+//    @Override
+//    public void dismiss() {
+////        exitAnimator();
+//    }
+
+
 
     private void exitAnimator() {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(masker, "alpha", 1, 0);

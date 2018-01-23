@@ -12,7 +12,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -165,9 +164,9 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(GridSpacingItemDecoration.newBuilder().spacing(ImagePickerUtils.dp2px(this, 4)).build());
         imageCellAdapter = new ImageCellAdapter();
-        imageFolderAdapter = new ImageFolderAdapter();
         recyclerView.setAdapter(imageCellAdapter);
         tvNavCenter.setOnClickListener(this);
+        createPopupFolderList();
     }
 
     @Override
@@ -195,18 +194,14 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
                 Log.i("ImageGridActivity", "您的手机没有图片");
                 return;
             }
-            createPopupFolderList();
             //刷新数据
             imageFolderAdapter.refreshData(mImageFolders);
-            if (mFolderPopupWindow.isShowing()) {
-                mFolderPopupWindow.dismiss();
-            } else {
-                mFolderPopupWindow.showAtLocation(tvNavCenter, Gravity.NO_GRAVITY, 0, 0);
-                //默认选择当前选择的上一个，当目录很多时，直接定位到已选中的条目
-                int index = imageFolderAdapter.getSelectIndex();
-                index = index == 0 ? index : index - 1;
-                mFolderPopupWindow.setSelection(index);
-            }
+            Log.i("ImageGridActivity", "mFolderPopupWindow is show");
+            mFolderPopupWindow.showAsDropDown(tvNavCenter, 0, 0);
+            //默认选择当前选择的上一个，当目录很多时，直接定位到已选中的条目
+            int index = imageFolderAdapter.getSelectIndex();
+            index = index == 0 ? index : index - 1;
+            mFolderPopupWindow.setSelection(index);
         } else if (i == R.id.tv_nav_right) {
 
         } else {
@@ -217,6 +212,7 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
      * 创建弹出的ListView
      */
     private void createPopupFolderList() {
+        imageFolderAdapter = new ImageFolderAdapter();
         mFolderPopupWindow = new FolderPopUpWindow(this, imageFolderAdapter);
         mFolderPopupWindow.setOnItemClickListener(new FolderPopUpWindow.OnItemClickListener() {
             @Override
