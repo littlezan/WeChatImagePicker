@@ -131,12 +131,13 @@ public class VideoDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
                 allImagesFolder.path = "/";
                 allImagesFolder.cover = allImages.get(0);
                 allImagesFolder.images = allImages;
-                imageFolders.add(0, allImagesFolder);  //确保第一条是所有图片
+                //确保第一条是所有图片
+                imageFolders.add(0, allImagesFolder);
             }
         }
 
         //回调接口，通知图片数据准备完成
-//        ImagePicker.getInstance().setImageFolders(imageFolders);
+        ImagePicker.getInstance().setImageFolders(imageFolders);
         loadedListener.onVideosLoaded(imageFolders);
     }
 

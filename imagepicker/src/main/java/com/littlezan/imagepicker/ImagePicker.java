@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 
+import com.littlezan.imagepicker.bean.ImageFolder;
 import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.loader.ImageLoader;
 import com.littlezan.imagepicker.ui.ImagePickerActivity;
@@ -71,6 +72,10 @@ public class ImagePicker {
     private ImageLoader imageLoader;
 
     /**
+     * 所有的图片文件夹
+     */
+    private List<ImageFolder> imageFolders;
+    /**
      * 选中的图片集合
      */
     private ArrayList<ImageItem> selectedImages = new ArrayList<>();
@@ -90,7 +95,7 @@ public class ImagePicker {
     /**
      * 当前选中的文件夹位置 0表示所有图片
      */
-    private int mCurrentImageFolderPosition = 0;
+    private int currentImageFolderPosition = 0;
 
 
     public void start(Context context, ModeMediaType modeMediaType) {
@@ -107,12 +112,16 @@ public class ImagePicker {
         this.imageLoader = imageLoader;
     }
 
-    public ArrayList<ImageItem> getSelectedImages() {
-        return selectedImages;
+    public List<ImageFolder> getImageFolders() {
+        return imageFolders;
     }
 
-    public void setSelectedImages(ArrayList<ImageItem> selectedImages) {
-        this.selectedImages = selectedImages;
+    public void setImageFolders(List<ImageFolder> imageFolders) {
+        this.imageFolders = imageFolders;
+    }
+
+    public ArrayList<ImageItem> getSelectedImages() {
+        return selectedImages;
     }
 
     public int getSelectLimit() {
@@ -128,11 +137,19 @@ public class ImagePicker {
     }
 
     public int getCurrentImageFolderPosition() {
-        return mCurrentImageFolderPosition;
+        return currentImageFolderPosition;
     }
 
-    public void setCurrentImageFolderPosition(int mCurrentSelectedImageSetPosition) {
-        mCurrentImageFolderPosition = mCurrentSelectedImageSetPosition;
+    public void setCurrentImageFolderPosition(int currentImageFolderPosition) {
+        this.currentImageFolderPosition = currentImageFolderPosition;
+    }
+
+    public ArrayList<ImageItem> getCurrentImageFolderItems() {
+        return imageFolders.get(currentImageFolderPosition).images;
+    }
+
+    public boolean isSelect(ImageItem item) {
+        return selectedImages.contains(item);
     }
 
 
@@ -217,14 +234,14 @@ public class ImagePicker {
             mImageSelectedListeners.clear();
             mImageSelectedListeners = null;
         }
-//        if (mImageFolders != null) {
-//            mImageFolders.clear();
-//            mImageFolders = null;
-//        }
+        if (imageFolders != null) {
+            imageFolders.clear();
+            imageFolders = null;
+        }
         if (selectedImages != null) {
             selectedImages.clear();
         }
-//        mCurrentImageFolderPosition = 0;
+        currentImageFolderPosition = 0;
     }
 
 

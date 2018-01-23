@@ -183,6 +183,7 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
         } else {
             tvNavRight.setText("完成");
         }
+        imageCellAdapter.notifyItemChanged(position+1);
     }
 
     @Override

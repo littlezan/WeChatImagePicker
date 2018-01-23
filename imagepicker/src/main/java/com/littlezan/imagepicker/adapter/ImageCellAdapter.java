@@ -12,12 +12,13 @@ import com.littlezan.imagepicker.R;
 import com.littlezan.imagepicker.bean.ImageCamera;
 import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.bean.ImageVideo;
+import com.littlezan.imagepicker.ui.ImagePreviewActivity;
 
 import java.util.ArrayList;
 
 /**
  * ClassName: ImageCellAdapter
- * Description:
+ * Description: 图片浏览网格
  *
  * @author 彭赞
  * @version 1.0
@@ -134,6 +135,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
 
         View rootView;
+
         VideoViewHolder(View itemView) {
             super(itemView);
             rootView = itemView;
@@ -164,7 +166,8 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         void bind(final ImageItem imageItem, final int position) {
             ImagePicker.getInstance().getImageLoader().displayImage(ivImg.getContext(), imageItem.path, ivImg);
-            rendUI(imageItem);
+            boolean containsCurrent = ImagePicker.getInstance().getSelectedImages().contains(imageItem);
+            ivCheck.setSelected(containsCurrent);
             ivCheck.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -173,18 +176,22 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     if (!ivCheck.isSelected() && selectSize >= selectLimit) {
                         Toast.makeText(ivCheck.getContext(), ivCheck.getContext().getString(R.string.ip_select_limit, selectLimit), Toast.LENGTH_SHORT).show();
                     } else {
-                        ImagePicker.getInstance().addSelectedImageItem(position, imageItem, !ivCheck.isSelected());
-                        rendUI(imageItem);
+                        ivCheck.setSelected(!ivCheck.isSelected());
+                        ImagePicker.getInstance().addSelectedImageItem(position, imageItem, ivCheck.isSelected());
+                        mask.setVisibility(ivCheck.isSelected() ? View.VISIBLE : View.GONE);
                     }
+                }
+            });
+
+            ivImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int currentPositionInFolder = position - 1;
+                    ImagePreviewActivity.start(ivImg.getContext(), currentPositionInFolder);
                 }
             });
 
         }
 
-        private void rendUI(ImageItem imageItem) {
-            boolean containsCurrent = ImagePicker.getInstance().getSelectedImages().contains(imageItem);
-            ivCheck.setSelected(containsCurrent);
-            mask.setVisibility(ivCheck.isSelected() ? View.VISIBLE : View.GONE);
-        }
     }
 }
