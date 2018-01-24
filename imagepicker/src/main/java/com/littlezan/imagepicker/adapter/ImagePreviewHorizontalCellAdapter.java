@@ -24,6 +24,7 @@ public class ImagePreviewHorizontalCellAdapter extends RecyclerView.Adapter<Imag
 
     private ArrayList<ImageItem> items = new ArrayList<>();
     private OnItemClickListener onItemClickListener;
+    private ImageItem currentImageItem;
 
 
     @Override
@@ -62,26 +63,39 @@ public class ImagePreviewHorizontalCellAdapter extends RecyclerView.Adapter<Imag
         notifyItemRangeChanged(position, getItemCount());
     }
 
+    public void setCurrentImageItem(ImageItem imageItem) {
+        currentImageItem = imageItem;
+    }
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
     public interface OnItemClickListener {
 
+        /**
+         * 点击item
+         *
+         * @param view      view
+         * @param imageItem imageItem
+         */
         void onItemClick(View view, ImageItem imageItem);
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPreview;
+        View mask;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             ivPreview = itemView.findViewById(R.id.iv_preview);
+            mask = itemView.findViewById(R.id.mask);
         }
 
-        public void bind(final ImageItem imageItem) {
+        void bind(final ImageItem imageItem) {
             ImagePicker.getInstance().getImageLoader().displayImage(ivPreview.getContext(), imageItem.path, ivPreview);
+            mask.setVisibility(imageItem == currentImageItem ? View.VISIBLE : View.GONE);
             ivPreview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

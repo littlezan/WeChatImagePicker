@@ -1,14 +1,16 @@
 package com.littlezan.imagepicker.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.view.animation.AnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 import com.littlezan.imagepicker.ImagePicker;
@@ -16,6 +18,8 @@ import com.littlezan.imagepicker.R;
 import com.littlezan.imagepicker.adapter.ImagePageAdapter;
 import com.littlezan.imagepicker.adapter.ImagePreviewHorizontalCellAdapter;
 import com.littlezan.imagepicker.bean.ImageItem;
+
+import java.io.File;
 
 /**
  * ClassName: ImagePreviewActivity
@@ -25,7 +29,7 @@ import com.littlezan.imagepicker.bean.ImageItem;
  * @version 1.0
  * @since 2018-01-23  15:36
  */
-public class ImagePreviewActivity extends AppCompatActivity implements View.OnClickListener {
+public class ImagePreviewActivity extends BaseImageCropActivity implements View.OnClickListener {
 
     public static final String EXTRA_SELECTED_IMAGE_POSITION = "extra_selected_image_position";
 
@@ -34,7 +38,6 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
     private android.widget.TextView tvNavCenter;
     private android.widget.TextView tvNavRight;
     private android.support.v7.widget.Toolbar toolbar;
-    private android.support.design.widget.AppBarLayout appBarLayout;
     private android.support.v4.view.ViewPager viewPager;
     private android.support.v7.widget.RecyclerView recyclerView;
     private android.widget.TextView tvCrop;
@@ -65,12 +68,14 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
         this.tvCrop = findViewById(R.id.tv_crop);
         this.recyclerView = findViewById(R.id.recycler_view);
         this.viewPager = findViewById(R.id.view_pager);
-        this.appBarLayout = findViewById(R.id.app_bar_layout);
+//        this.appBarLayout = findViewById(R.id.app_bar_layout);
         this.toolbar = findViewById(R.id.toolbar);
         this.tvNavRight = findViewById(R.id.tv_nav_right);
         this.tvNavCenter = findViewById(R.id.tv_nav_center);
         this.ivNavLeft = findViewById(R.id.iv_nav_left);
 
+        tvSelect.setOnClickListener(this);
+        tvCrop.setOnClickListener(this);
         parseIntent();
         initToolbar();
         initView();
@@ -89,6 +94,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
         ivNavLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                finish();
+            }
+        });
+        tvNavRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 finish();
             }
         });
@@ -126,10 +137,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
             @Override
             public void onPageSelected(int position) {
                 currentPosition = position;
-                ImageItem item = ImagePicker.getInstance().getCurrentImageFolderItems().get(position);
-                boolean isSelected = ImagePicker.getInstance().isSelect(item);
+                ImageItem imageItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(position);
+                boolean isSelected = ImagePicker.getInstance().isSelect(imageItem);
                 tvSelect.setSelected(isSelected);
                 tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, ImagePicker.getInstance().getCurrentImageFolderItems().size()));
+                horizontalCellAdapter.setCurrentImageItem(imageItem);
+                horizontalCellAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -142,8 +155,8 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
         recyclerView.setHasFixedSize(true);
         horizontalCellAdapter = new ImagePreviewHorizontalCellAdapter();
         recyclerView.setAdapter(horizontalCellAdapter);
+        horizontalCellAdapter.setCurrentImageItem(ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition));
         horizontalCellAdapter.refreshData(ImagePicker.getInstance().getSelectedImages());
-        tvSelect.setOnClickListener(this);
         horizontalCellAdapter.setOnItemClickListener(new ImagePreviewHorizontalCellAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, ImageItem imageItem) {
@@ -165,15 +178,27 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
      * 单击时，隐藏头和尾
      */
     public void onImageSingleTap() {
-        if (appBarLayout.getVisibility() == View.VISIBLE) {
-            appBarLayout.setAnimation(AnimationUtils.loadAnimation(this, R.anim.top_out));
-            appBarLayout.setVisibility(View.GONE);
+        if (toolbar.getVisibility() == View.VISIBLE) {
+            toolbar.animate().translationY(-toolbar.getHeight()).setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    toolbar.setVisibility(View.GONE);
+                }
+            }).start();
+            llBottom.animate().translationY(llBottom.getTop() + llBottom.getHeight()).setInterpolator(new AccelerateDecelerateInterpolator()).start();
 //            tintManager.setStatusBarTintResource(Color.TRANSPARENT);//通知栏所需颜色
             //给最外层布局加上这个属性表示，Activity全屏显示，且状态栏被隐藏覆盖掉。
 //            if (Build.VERSION.SDK_INT >= 16) content.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         } else {
-            appBarLayout.setAnimation(AnimationUtils.loadAnimation(this, R.anim.top_in));
-            appBarLayout.setVisibility(View.VISIBLE);
+            toolbar.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new AnimatorListenerAdapter() {
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    toolbar.setVisibility(View.VISIBLE);
+                }
+            }).start();
+            llBottom.animate().translationY(0).setInterpolator(new AccelerateDecelerateInterpolator()).start();
 //            tintManager.setStatusBarTintResource(R.color.ip_color_primary_dark);//通知栏所需颜色
             //Activity全屏显示，但状态栏不会被隐藏覆盖，状态栏依然可见，Activity顶端布局部分会被状态遮住
 //            if (Build.VERSION.SDK_INT >= 16) content.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -192,7 +217,7 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
             } else {
                 tvSelect.setSelected(!tvSelect.isSelected());
                 ImageItem currentItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition);
-                ImagePicker.getInstance().addSelectedImageItem(currentPosition, currentItem, tvSelect.isSelected());
+                ImagePicker.getInstance().addSelectedImageItem(currentItem, tvSelect.isSelected());
                 if (tvSelect.isSelected()) {
                     horizontalCellAdapter.addData(currentItem);
                 } else {
@@ -201,7 +226,12 @@ public class ImagePreviewActivity extends AppCompatActivity implements View.OnCl
                 setRecyclerViewVisible();
                 rendNavRight();
             }
+        } else if (id == R.id.tv_crop) {
+            ImageItem currentItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition);
+            startCrop(Uri.fromFile(new File(currentItem.path)));
         }
     }
+
+
 
 }

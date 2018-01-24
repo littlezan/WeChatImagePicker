@@ -20,11 +20,9 @@ import com.littlezan.imagepicker.util.ImagePickerUtils;
 import com.littlezan.imagepicker.util.ProviderUtil;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.UUID;
 
 /**
  * ClassName: ImagePicker
@@ -35,7 +33,6 @@ import java.util.Locale;
  * @since 2018-01-22  10:58
  */
 public class ImagePicker {
-
 
 
     public enum ModeMediaType {
@@ -153,21 +150,21 @@ public class ImagePicker {
     }
 
 
-    public void addSelectedImageItem(int position, ImageItem item, boolean isAdd) {
+    public void addSelectedImageItem(ImageItem item, boolean isAdd) {
         if (isAdd) {
             selectedImages.add(item);
         } else {
             selectedImages.remove(item);
         }
-        notifyImageSelectedChanged(position, item, isAdd);
+        notifyImageSelectedChanged(item, isAdd);
     }
 
-    private void notifyImageSelectedChanged(int position, ImageItem item, boolean isAdd) {
+    private void notifyImageSelectedChanged(ImageItem item, boolean isAdd) {
         if (mImageSelectedListeners == null) {
             return;
         }
         for (OnImageSelectedListener l : mImageSelectedListeners) {
-            l.onImageSelected(position, item, isAdd);
+            l.onImageSelected(item, isAdd);
         }
     }
 
@@ -184,33 +181,32 @@ public class ImagePicker {
                 takeImageFile = Environment.getDataDirectory();
             }
             takeImageFile = createFile(takeImageFile, "IMG_", ".jpg");
-            if (takeImageFile != null) {
-                // 默认情况下，即不需要指定intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                // 照相机有自己默认的存储路径，拍摄的照片将返回一个缩略图。如果想访问原始图片，
-                // 可以通过dat extra能够得到原始图片位置。即，如果指定了目标uri，data就没有数据，
-                // 如果没有指定uri，则data就返回有数据！
+            //
+            //默认情况下，即不需要指定intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            //照相机有自己默认的存储路径，拍摄的照片将返回一个缩略图。如果想访问原始图片，
+            //可以通过dat extra能够得到原始图片位置。即，如果指定了目标uri，data就没有数据，
+            //如果没有指定uri，则data就返回有数据！
+            //
+            Uri uri;
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                uri = Uri.fromFile(takeImageFile);
+            } else {
 
-                Uri uri;
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                    uri = Uri.fromFile(takeImageFile);
-                } else {
-
-                    /**
-                     * 7.0 调用系统相机拍照不再允许使用Uri方式，应该替换为FileProvider
-                     * 并且这样可以解决MIUI系统上拍照返回size为0的情况
-                     */
-                    uri = FileProvider.getUriForFile(activity, ProviderUtil.getFileProviderName(activity), takeImageFile);
-                    //加入uri权限 要不三星手机不能拍照
-                    List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                    for (ResolveInfo resolveInfo : resInfoList) {
-                        String packageName = resolveInfo.activityInfo.packageName;
-                        activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    }
+                /*
+                  7.0 调用系统相机拍照不再允许使用Uri方式，应该替换为FileProvider
+                  并且这样可以解决MIUI系统上拍照返回size为0的情况
+                 */
+                uri = FileProvider.getUriForFile(activity, ProviderUtil.getFileProviderName(activity), takeImageFile);
+                //加入uri权限 要不三星手机不能拍照
+                List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : resInfoList) {
+                    String packageName = resolveInfo.activityInfo.packageName;
+                    activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
-
-                Log.e("nanchen", ProviderUtil.getFileProviderName(activity));
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
             }
+
+            Log.e("nanchen", ProviderUtil.getFileProviderName(activity));
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
         activity.startActivityForResult(takePictureIntent, requestCode);
     }
@@ -223,9 +219,28 @@ public class ImagePicker {
         if (!folder.exists() || !folder.isDirectory()) {
             folder.mkdirs();
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA);
-        String filename = prefix + dateFormat.format(new Date(System.currentTimeMillis())) + suffix;
+        String filename = prefix + UUID.randomUUID().toString() + suffix;
         return new File(folder, filename);
+    }
+
+    /**
+     * 扫描图片
+     */
+    public static void galleryAddPic(Context context, File file) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        context.sendBroadcast(mediaScanIntent);
+    }
+
+    public File getTakeImageFile() {
+        return takeImageFile;
+    }
+
+    public void clearSelectedImages() {
+        if (selectedImages != null) {
+            selectedImages.clear();
+        }
     }
 
 
@@ -265,12 +280,10 @@ public class ImagePicker {
     public interface OnImageSelectedListener {
         /**
          * 选中了图片
-         *
-         * @param position position
-         * @param item     item
+         *  @param item     item
          * @param isAdd    isAdd
          */
-        void onImageSelected(int position, ImageItem item, boolean isAdd);
+        void onImageSelected(ImageItem item, boolean isAdd);
     }
 
 }

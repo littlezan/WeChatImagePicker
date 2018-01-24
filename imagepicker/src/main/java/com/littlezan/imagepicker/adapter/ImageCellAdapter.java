@@ -37,14 +37,14 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * 照片
      */
     private static final int ITEM_TYPE_NORMAL = 2;
+
     /**
      * 当前需要显示的所有的图片数据
      */
     private ArrayList<Object> items = new ArrayList<>();
 
+    private OnItemClickListener onItemClickListener;
 
-    public ImageCellAdapter() {
-    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -58,13 +58,20 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         Object o = items.get(position);
         if (holder instanceof CameraViewHolder) {
             CameraViewHolder cameraViewHolder = (CameraViewHolder) holder;
             if (o instanceof ImageCamera) {
-                ImageCamera imageCamera = (ImageCamera) o;
-                cameraViewHolder.bind(imageCamera);
+                final ImageCamera imageCamera = (ImageCamera) o;
+                cameraViewHolder.rootView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (onItemClickListener != null) {
+                            onItemClickListener.onItemClick(v,position, imageCamera);
+                        }
+                    }
+                });
             }
         } else if (holder instanceof VideoViewHolder) {
             VideoViewHolder videoViewHolder = (VideoViewHolder) holder;
@@ -112,6 +119,25 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         notifyDataSetChanged();
     }
 
+    public ArrayList<Object> getItems() {
+        return items;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+
+        /**
+         * 点击item
+         *
+         * @param view view
+         * @param position position
+         * @param item item
+         */
+        void onItemClick(View view, int position, Object item);
+    }
 
     public static class CameraViewHolder extends RecyclerView.ViewHolder {
 
@@ -122,13 +148,6 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             rootView = itemView;
         }
 
-        void bind(ImageCamera imageCamera) {
-            rootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                }
-            });
-        }
     }
 
 
@@ -168,6 +187,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ImagePicker.getInstance().getImageLoader().displayImage(ivImg.getContext(), imageItem.path, ivImg);
             boolean containsCurrent = ImagePicker.getInstance().getSelectedImages().contains(imageItem);
             ivCheck.setSelected(containsCurrent);
+            mask.setVisibility(ivCheck.isSelected() ? View.VISIBLE : View.GONE);
             ivCheck.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -176,9 +196,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     if (!ivCheck.isSelected() && selectSize >= selectLimit) {
                         Toast.makeText(ivCheck.getContext(), ivCheck.getContext().getString(R.string.ip_select_limit, selectLimit), Toast.LENGTH_SHORT).show();
                     } else {
-                        ivCheck.setSelected(!ivCheck.isSelected());
-                        ImagePicker.getInstance().addSelectedImageItem(position, imageItem, ivCheck.isSelected());
-                        mask.setVisibility(ivCheck.isSelected() ? View.VISIBLE : View.GONE);
+                        ImagePicker.getInstance().addSelectedImageItem(imageItem, !ivCheck.isSelected());
                     }
                 }
             });

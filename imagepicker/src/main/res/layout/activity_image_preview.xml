@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="#000000"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
 
-        tools:targetApi="lollipop">
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -19,7 +20,6 @@
             android:background="#7F3E3E3E"
             app:contentInsetStart="0dp"
             app:layout_collapseMode="pin"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             tools:layout_width="match_parent">
 
             <ImageView
@@ -29,7 +29,7 @@
                 android:layout_gravity="start"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_toolbar_back"
+                android:src="@drawable/icon_back_white"
                 tools:ignore="ContentDescription"
                 tools:visibility="visible" />
 
@@ -64,14 +64,9 @@
                 tools:visibility="visible" />
 
         </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
 
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+
 
     <RelativeLayout
         android:id="@+id/ll_bottom"

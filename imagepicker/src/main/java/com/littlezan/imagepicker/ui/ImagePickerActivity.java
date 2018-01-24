@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * ClassName: ImagePickerActivity
- * Description:
+ * Description: 图库浏览
  *
  * @author 彭赞
  * @version 1.0
@@ -88,7 +88,6 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 initDataSourceLoader();
-
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_STORAGE);
             }
@@ -105,7 +104,8 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
                 public void onImagesLoaded(List<ImageFolder> imageFolders) {
                     mImageFolders = imageFolders;
                     if (imageFolders.size() > 0) {
-                        imageCellAdapter.refreshData(imageFolders.get(0).images);
+                        ArrayList<ImageItem> images = imageFolders.get(0).images;
+                        imageCellAdapter.refreshData(images);
                     }
                     imageFolderAdapter.refreshData(imageFolders);
                 }
@@ -165,8 +165,27 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
         recyclerView.addItemDecoration(GridSpacingItemDecoration.newBuilder().spacing(ImagePickerUtils.dp2px(this, 4)).build());
         imageCellAdapter = new ImageCellAdapter();
         recyclerView.setAdapter(imageCellAdapter);
+        imageCellAdapter.setOnItemClickListener(new ImageCellAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position, Object item) {
+                if (position == 0) {
+                    if (ImagePicker.getInstance().getModeMediaType() == ImagePicker.ModeMediaType.MEDIA_TYPE_IMAGE) {
+                        if (!(checkPermission(Manifest.permission.CAMERA))) {
+                            ActivityCompat.requestPermissions(ImagePickerActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
+                        } else {
+                            ImagePicker.getInstance().takePicture(ImagePickerActivity.this, ImagePicker.REQUEST_CODE_TAKE);
+                        }
+                    }
+                }
+            }
+        });
+
         tvNavCenter.setOnClickListener(this);
         createPopupFolderList();
+    }
+
+    public boolean checkPermission(@NonNull String permission) {
+        return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -176,14 +195,15 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onImageSelected(int position, ImageItem item, boolean isAdd) {
+    public void onImageSelected(ImageItem item, boolean isAdd) {
         int selectImageCount = ImagePicker.getInstance().getSelectedImages().size();
         if (selectImageCount > 0) {
             tvNavRight.setText(getString(R.string.ip_select_complete, selectImageCount, ImagePicker.getInstance().getSelectLimit()));
         } else {
             tvNavRight.setText("完成");
         }
-        imageCellAdapter.notifyItemChanged(position+1);
+        int notifyItemPosition = imageCellAdapter.getItems().indexOf(item);
+        imageCellAdapter.notifyItemChanged(notifyItemPosition);
     }
 
     @Override
@@ -197,7 +217,6 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
             }
             //刷新数据
             imageFolderAdapter.refreshData(mImageFolders);
-            Log.i("ImageGridActivity", "mFolderPopupWindow is show");
             mFolderPopupWindow.showAsDropDown(tvNavCenter, 0, 0);
             //默认选择当前选择的上一个，当目录很多时，直接定位到已选中的条目
             int index = imageFolderAdapter.getSelectIndex();
@@ -229,6 +248,69 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
             }
         });
         mFolderPopupWindow.setMargin(tvNavCenter.getHeight());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null && data.getExtras() != null) {
+//            if (resultCode == ImagePicker.RESULT_CODE_BACK) {
+//                isOrigin = data.getBooleanExtra(ImagePreviewActivity.ISORIGIN, false);
+//            } else {
+//                //从拍照界面返回
+//                //点击 X , 没有选择照片
+//                if (data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS) == null) {
+//                    //什么都不做 直接调起相机
+//                } else {
+//                    //说明是从裁剪页面过来的数据，直接返回就可以
+//                    setResult(ImagePicker.RESULT_CODE_ITEMS, data);
+//                }
+//                finish();
+//            }
+        } else {
+            //如果是裁剪，因为裁剪指定了存储的Uri，所以返回的data一定为null
+            if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE_TAKE) {
+                //发送广播通知图片增加了
+                ImagePicker.galleryAddPic(this, ImagePicker.getInstance().getTakeImageFile());
+
+                /**
+                 * 2017-03-21 对机型做旋转处理
+                 */
+                String path = ImagePicker.getInstance().getTakeImageFile().getAbsolutePath();
+//                int degree = BitmapUtil.getBitmapDegree(path);
+//                if (degree != 0){
+//                    Bitmap bitmap = BitmapUtil.rotateBitmapByDegree(path,degree);
+//                    if (bitmap != null){
+//                        File file = new File(path);
+//                        try {
+//                            FileOutputStream bos = new FileOutputStream(file);
+//                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+//                            bos.flush();
+//                            bos.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+
+                ImageItem imageItem = new ImageItem();
+                imageItem.path = path;
+                ImagePicker.getInstance().addSelectedImageItem(imageItem, true);
+                finish();
+//                if (imagePicker.isCrop()) {
+//                    Intent intent = new Intent(ImageGridActivity.this, ImageCropActivity.class);
+//                    startActivityForResult(intent, ImagePicker.REQUEST_CODE_CROP);  //单选需要裁剪，进入裁剪界面
+//                } else {
+//                    Intent intent = new Intent();
+//                    intent.putExtra(ImagePicker.EXTRA_RESULT_ITEMS, imagePicker.getSelectedImages());
+//                    setResult(ImagePicker.RESULT_CODE_ITEMS, intent);   //单选不需要裁剪，返回数据
+//                    finish();
+//                }
+            }
+//            else if (directPhoto) {
+//                finish();
+//            }
+        }
     }
 
 }
