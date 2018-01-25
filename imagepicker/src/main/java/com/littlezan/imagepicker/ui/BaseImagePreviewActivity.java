@@ -2,7 +2,6 @@ package com.littlezan.imagepicker.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.littlezan.imagepicker.ImagePicker;
@@ -20,16 +21,17 @@ import com.littlezan.imagepicker.adapter.ImagePreviewHorizontalCellAdapter;
 import com.littlezan.imagepicker.bean.ImageItem;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
- * ClassName: ImagePreviewActivity
+ * ClassName: ImageFolderPreviewActivity
  * Description: 图片预览界面
  *
  * @author 彭赞
  * @version 1.0
  * @since 2018-01-23  15:36
  */
-public class ImagePreviewActivity extends BaseImageCropActivity implements View.OnClickListener {
+public abstract class BaseImagePreviewActivity extends BaseImageCropActivity implements View.OnClickListener {
 
     public static final String EXTRA_SELECTED_IMAGE_POSITION = "extra_selected_image_position";
 
@@ -38,10 +40,12 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
     private android.widget.TextView tvNavCenter;
     private android.widget.TextView tvNavRight;
     private android.support.v7.widget.Toolbar toolbar;
-    private android.support.v4.view.ViewPager viewPager;
+    private ViewPager viewPager;
     private android.support.v7.widget.RecyclerView recyclerView;
     private android.widget.TextView tvSelect;
     private android.widget.RelativeLayout llBottom;
+    protected TextView tvDelete;
+    protected RelativeLayout rlCrop;
 
 
     /**
@@ -50,13 +54,7 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
     protected int currentPosition = 0;
     private ImagePreviewHorizontalCellAdapter horizontalCellAdapter;
     private ImagePageAdapter imagePageAdapter;
-
-
-    public static void start(Context context, int currentPosition) {
-        Intent intent = new Intent(context, ImagePreviewActivity.class);
-        intent.putExtra(EXTRA_SELECTED_IMAGE_POSITION, currentPosition);
-        context.startActivity(intent);
-    }
+    private ArrayList<ImageItem> imageListSource;
 
 
     @Override
@@ -68,16 +66,19 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
         android.widget.TextView tvCrop = findViewById(R.id.tv_crop);
         this.recyclerView = findViewById(R.id.recycler_view);
         this.viewPager = findViewById(R.id.view_pager);
-//        this.appBarLayout = findViewById(R.id.app_bar_layout);
         this.toolbar = findViewById(R.id.toolbar);
         this.tvNavRight = findViewById(R.id.tv_nav_right);
         this.tvNavCenter = findViewById(R.id.tv_nav_center);
         this.ivNavLeft = findViewById(R.id.iv_nav_left);
+        this.tvDelete = findViewById(R.id.tv_delete);
+        this.rlCrop = findViewById(R.id.rl_crop);
 
         tvSelect.setOnClickListener(this);
+        tvDelete.setOnClickListener(this);
         tvCrop.setOnClickListener(this);
         parseIntent();
         initToolbar();
+        initData();
         initView();
     }
 
@@ -114,15 +115,20 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
         }
     }
 
+    private void initData() {
+        imageListSource = initImagePageAdapterData();
+    }
+
     private void initView() {
-        ImageItem currentItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition);
+        ImageItem currentItem = imageListSource.get(currentPosition);
         tvSelect.setSelected(ImagePicker.getInstance().getSelectedImages().contains(currentItem));
         initViewPager();
         initRecyclerView();
     }
 
     private void initViewPager() {
-        imagePageAdapter = new ImagePageAdapter(ImagePicker.getInstance().getCurrentImageFolderItems());
+
+        imagePageAdapter = new ImagePageAdapter(imageListSource);
         viewPager.setAdapter(imagePageAdapter);
         imagePageAdapter.setPhotoViewClickListener(new ImagePageAdapter.PhotoViewClickListener() {
             @Override
@@ -137,15 +143,21 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
             @Override
             public void onPageSelected(int position) {
                 currentPosition = position;
-                ImageItem imageItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(position);
+                ImageItem imageItem = imageListSource.get(position);
                 boolean isSelected = ImagePicker.getInstance().isSelect(imageItem);
                 tvSelect.setSelected(isSelected);
-                tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, ImagePicker.getInstance().getCurrentImageFolderItems().size()));
+                tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, imageListSource.size()));
                 horizontalCellAdapter.setCurrentImageItem(imageItem);
                 horizontalCellAdapter.notifyDataSetChanged();
             }
         });
     }
+
+    /**
+     * 初始化 数据源
+     * @return
+     */
+    protected abstract ArrayList<ImageItem> initImagePageAdapterData();
 
     private void initRecyclerView() {
         setRecyclerViewVisible();
@@ -155,12 +167,12 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
         recyclerView.setHasFixedSize(true);
         horizontalCellAdapter = new ImagePreviewHorizontalCellAdapter();
         recyclerView.setAdapter(horizontalCellAdapter);
-        horizontalCellAdapter.setCurrentImageItem(ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition));
+        horizontalCellAdapter.setCurrentImageItem(imageListSource.get(currentPosition));
         horizontalCellAdapter.refreshData(ImagePicker.getInstance().getSelectedImages());
         horizontalCellAdapter.setOnItemClickListener(new ImagePreviewHorizontalCellAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, ImageItem imageItem) {
-                int position = ImagePicker.getInstance().getCurrentImageFolderItems().indexOf(imageItem);
+                int position = imageListSource.indexOf(imageItem);
                 viewPager.setCurrentItem(position, false);
             }
         });
@@ -216,7 +228,7 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
                 Toast.makeText(tvSelect.getContext(), tvSelect.getContext().getString(R.string.ip_select_limit, selectLimit), Toast.LENGTH_SHORT).show();
             } else {
                 tvSelect.setSelected(!tvSelect.isSelected());
-                ImageItem currentItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition);
+                ImageItem currentItem = imageListSource.get(currentPosition);
                 ImagePicker.getInstance().addSelectedImageItem(currentItem, tvSelect.isSelected());
                 if (tvSelect.isSelected()) {
                     horizontalCellAdapter.addData(currentItem);
@@ -226,16 +238,28 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
                 setRecyclerViewVisible();
                 rendNavRight();
             }
-        } else if (id == R.id.tv_crop) {
-            ImageItem currentItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition);
-            startCrop(Uri.fromFile(new File(currentItem.path)));
+        } else if (id == R.id.tv_delete) {
+            ImageItem currentItem = imageListSource.get(currentPosition);
+            ImagePicker.getInstance().addSelectedImageItem(currentItem, false);
+            horizontalCellAdapter.removeData(currentItem);
+            imagePageAdapter.notifyDataSetChanged();
+            setRecyclerViewVisible();
+            rendNavRight();
+            if (ImagePicker.getInstance().getSelectedImages().size() == 0) {
+                finish();
+            }
+        } else {
+            if (id == R.id.tv_crop) {
+                ImageItem currentItem = imageListSource.get(currentPosition);
+                startCrop(Uri.fromFile(new File(currentItem.path)));
+            }
         }
     }
 
 
     @Override
     protected void handleReCropResult(Uri resultUri) {
-        ImageItem currentItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition);
+        ImageItem currentItem = imageListSource.get(currentPosition);
         currentItem.cropUri = resultUri;
         imagePageAdapter.notifyDataSetChanged();
         ImagePicker.getInstance().notifyImageItemChanged(currentItem);

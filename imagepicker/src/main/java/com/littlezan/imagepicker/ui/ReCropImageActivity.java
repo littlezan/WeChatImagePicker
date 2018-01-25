@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.littlezan.imagepicker.ImagePicker;
 import com.littlezan.imagepicker.R;
+import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.util.thirdlib.UCropUtil;
 import com.yalantis.ucrop.UCrop;
 
@@ -87,6 +88,12 @@ public class ReCropImageActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         int viewId = v.getId();
         if (viewId == R.id.tv_nav_right) {
+            ImageItem cameraImageItem = ImagePicker.getInstance().getCameraImageItem();
+            if (cameraImageItem != null && sourceUri != null) {
+                if (cameraImageItem.path.equals(sourceUri.getPath())) {
+                    ImagePicker.getInstance().addSelectedImageItem(cameraImageItem, true);
+                }
+            }
             setResult(Activity.RESULT_OK);
             finish();
         } else if (viewId == R.id.tv_re_crop) {

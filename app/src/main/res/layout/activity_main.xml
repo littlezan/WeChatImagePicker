@@ -1,26 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
     tools:context="com.littlezan.wechatimagepicker.MainActivity">
 
-   <Button
-       android:id="@+id/btn_to_image_picker"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="选择照片"
-       tools:ignore="HardcodedText" />
 
-   <Button
-       android:id="@+id/btn_to_video_picker"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:text="选择视频"
-       tools:ignore="HardcodedText" />
+    <EditText
+        android:id="@+id/et_content"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:background="@null"
+        android:gravity="start"
+        android:hint="此刻的念想……"
+        android:padding="15dp"
+        android:textColor="#FF9B9B9B"
+        android:textSize="14sp"
+        tools:ignore="HardcodedText" />
+
+    <ImageView
+        android:id="@+id/iv_img"
+        android:layout_width="78dp"
+        android:layout_height="78dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:background="#FFF1F2F4"
+        android:scaleType="centerInside"
+        android:src="@drawable/btn_dongtai_fabu_pic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_content"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/iv_video"
+        android:layout_width="78dp"
+        android:layout_height="78dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:background="#FFF1F2F4"
+        android:scaleType="centerInside"
+        android:src="@drawable/btn_dongtai_fabu_video"
+        app:layout_constraintLeft_toRightOf="@+id/iv_img"
+        app:layout_constraintTop_toBottomOf="@+id/et_content"
+        tools:ignore="ContentDescription" />
 
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/et_content" />
 
-</android.support.v7.widget.LinearLayoutCompat>
+
+</android.support.constraint.ConstraintLayout>

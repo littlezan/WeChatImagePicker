@@ -17,27 +17,57 @@ import java.io.Serializable;
  */
 public class ImageItem implements Serializable, Parcelable {
 
-    public String name;       //图片的名字
-    public String path;       //图片的路径
-    public long size;         //图片的大小
-    public int width;         //图片的宽度
-    public int height;        //图片的高度
-    public String mimeType;   //图片的类型
-    public long addTime;      //图片的创建时间
     /**
-     *  Ucrop裁剪后的Uri
+     * 图片的名字
+     */
+    public String name;
+    /**
+     * 图片的路径
+     */
+    public String path;
+    /**
+     * 图片的大小
+     */
+    public long size;
+    /**
+     * 图片的宽度
+     */
+    public int width;
+    /**
+     * 图片的高度
+     */
+    public int height;
+    /**
+     * 图片的类型
+     */
+    public String mimeType;
+    /**
+     * 图片的创建时间
+     */
+    public long addTime;
+    /**
+     * Ucrop裁剪后的Uri
      */
     public Uri cropUri;
 
-    /** 图片的路径和创建时间相同就认为是同一张图片 */
+    /**
+     * 图片的路径 相同 认为是同一张图片
+     */
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ImageItem) {
-            ImageItem item = (ImageItem) o;
-            return this.path.equalsIgnoreCase(item.path) && this.addTime == item.addTime;
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ImageItem imageItem = (ImageItem) o;
+        return path.equals(imageItem.path);
+    }
 
-        return super.equals(o);
+    @Override
+    public int hashCode() {
+        return path.hashCode();
     }
 
 
@@ -54,7 +84,6 @@ public class ImageItem implements Serializable, Parcelable {
         dest.writeInt(this.width);
         dest.writeInt(this.height);
         dest.writeString(this.mimeType);
-        dest.writeLong(this.addTime);
         dest.writeLong(this.addTime);
         dest.writeParcelable(this.cropUri, flags);
     }
@@ -73,7 +102,7 @@ public class ImageItem implements Serializable, Parcelable {
         this.cropUri = in.readParcelable(Uri.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<ImageItem> CREATOR = new Parcelable.Creator<ImageItem>() {
+    public static final Creator<ImageItem> CREATOR = new Creator<ImageItem>() {
         @Override
         public ImageItem createFromParcel(Parcel source) {
             return new ImageItem(source);

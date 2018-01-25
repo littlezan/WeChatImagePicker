@@ -12,7 +12,7 @@ import com.littlezan.imagepicker.R;
 import com.littlezan.imagepicker.bean.ImageCamera;
 import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.bean.ImageVideo;
-import com.littlezan.imagepicker.ui.ImagePreviewActivity;
+import com.littlezan.imagepicker.ui.ImageFolderPreviewActivity;
 
 import java.util.ArrayList;
 
@@ -108,12 +108,19 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    public void refreshData(ArrayList<ImageItem> images) {
+    public void refreshData(int folderPosition, ArrayList<ImageItem> images) {
+        if (images == null || images.size() == 0) {
+            return;
+        }
         items.clear();
         if (ImagePicker.getInstance().getModeMediaType() == ImagePicker.ModeMediaType.MEDIA_TYPE_IMAGE) {
-            items.add(new ImageCamera());
+            if (folderPosition == 0) {
+                items.add(new ImageCamera());
+            }
         } else if (ImagePicker.getInstance().getModeMediaType() == ImagePicker.ModeMediaType.MEDIA_TYPE_VIDEO) {
-            items.add(new ImageVideo());
+            if (folderPosition == 0) {
+                items.add(new ImageVideo());
+            }
         }
         items.addAll(images);
         notifyDataSetChanged();
@@ -206,7 +213,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 @Override
                 public void onClick(View v) {
                     int currentPositionInFolder = position - 1;
-                    ImagePreviewActivity.start(ivImg.getContext(), currentPositionInFolder);
+                    ImageFolderPreviewActivity.start(ivImg.getContext(), currentPositionInFolder);
                 }
             });
 

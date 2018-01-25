@@ -16,6 +16,7 @@ import com.littlezan.imagepicker.bean.ImageFolder;
 import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.loader.ImageLoader;
 import com.littlezan.imagepicker.ui.ImagePickerActivity;
+import com.littlezan.imagepicker.ui.ImageSelectPreviewActivity;
 import com.littlezan.imagepicker.util.ImagePickerUtils;
 import com.littlezan.imagepicker.util.ProviderUtil;
 
@@ -96,10 +97,20 @@ public class ImagePicker {
      */
     private int currentImageFolderPosition = 0;
 
+    /**
+     * 拍照生成的
+     */
+    private ImageItem cameraImageItem;
 
-    public void start(Context context, ModeMediaType modeMediaType) {
-        ImagePickerActivity.start(context);
+
+    public void startPicker(Activity activity, int requestCode, ModeMediaType modeMediaType, int selectLimit) {
+        ImagePickerActivity.start(activity, requestCode);
         this.modeMediaType = modeMediaType;
+        this.selectLimit = selectLimit;
+    }
+
+    public void startPreview(Activity activity, int requestCode) {
+        ImageSelectPreviewActivity.start(activity, requestCode);
     }
 
 
@@ -151,6 +162,13 @@ public class ImagePicker {
         return selectedImages.contains(item);
     }
 
+    public ImageItem getCameraImageItem() {
+        return cameraImageItem;
+    }
+
+    public void setCameraImageItem(ImageItem cameraImageItem) {
+        this.cameraImageItem = cameraImageItem;
+    }
 
     public void addSelectedImageItem(ImageItem item, boolean isAdd) {
         if (isAdd) {

@@ -148,6 +148,10 @@ public class ImageDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /** 所有图片加载完成的回调接口 */
     public interface OnImagesLoadedListener {
+        /**
+         * 所有图片加载完成的回调接口
+         * @param imageFolders imageFolders
+         */
         void onImagesLoaded(List<ImageFolder> imageFolders);
     }
 }

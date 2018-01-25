@@ -43,6 +43,9 @@ public class ImagePreviewHorizontalCellAdapter extends RecyclerView.Adapter<Imag
     }
 
     public void refreshData(ArrayList<ImageItem> images) {
+        if (images == null || images.size() == 0) {
+            return;
+        }
         items.clear();
         items.addAll(images);
         notifyDataSetChanged();

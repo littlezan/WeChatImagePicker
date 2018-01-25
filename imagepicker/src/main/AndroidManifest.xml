@@ -11,12 +11,20 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application>
+
+
         <activity
             android:name=".ui.ImagePickerActivity"
             android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
         <activity
-            android:name=".ui.ImagePreviewActivity"
+            android:name=".ui.ImageFolderPreviewActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImagePickerTheme" />
+        <activity
+            android:name=".ui.ImageSelectPreviewActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
@@ -31,8 +39,21 @@
         <activity
             android:name=".ui.ReCropImageActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
+
+
+        <!--适配Android 7.0 start -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.littlezan.imagepicker.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <!--适配Android 7.0 end -->
     </application>
 </manifest>
