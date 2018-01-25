@@ -1,5 +1,6 @@
 package com.littlezan.imagepicker.bean;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -23,6 +24,10 @@ public class ImageItem implements Serializable, Parcelable {
     public int height;        //图片的高度
     public String mimeType;   //图片的类型
     public long addTime;      //图片的创建时间
+    /**
+     *  Ucrop裁剪后的Uri
+     */
+    public Uri cropUri;
 
     /** 图片的路径和创建时间相同就认为是同一张图片 */
     @Override
@@ -50,6 +55,8 @@ public class ImageItem implements Serializable, Parcelable {
         dest.writeInt(this.height);
         dest.writeString(this.mimeType);
         dest.writeLong(this.addTime);
+        dest.writeLong(this.addTime);
+        dest.writeParcelable(this.cropUri, flags);
     }
 
     public ImageItem() {
@@ -63,6 +70,7 @@ public class ImageItem implements Serializable, Parcelable {
         this.height = in.readInt();
         this.mimeType = in.readString();
         this.addTime = in.readLong();
+        this.cropUri = in.readParcelable(Uri.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<ImageItem> CREATOR = new Parcelable.Creator<ImageItem>() {

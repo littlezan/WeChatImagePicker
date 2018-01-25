@@ -68,7 +68,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     @Override
                     public void onClick(View v) {
                         if (onItemClickListener != null) {
-                            onItemClickListener.onItemClick(v,position, imageCamera);
+                            onItemClickListener.onItemClick(v, position, imageCamera);
                         }
                     }
                 });
@@ -132,9 +132,9 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         /**
          * 点击item
          *
-         * @param view view
+         * @param view     view
          * @param position position
-         * @param item item
+         * @param item     item
          */
         void onItemClick(View view, int position, Object item);
     }
@@ -184,7 +184,8 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         void bind(final ImageItem imageItem, final int position) {
-            ImagePicker.getInstance().getImageLoader().displayImage(ivImg.getContext(), imageItem.path, ivImg);
+            String path = imageItem.cropUri == null ? imageItem.path : imageItem.cropUri.getPath();
+            ImagePicker.getInstance().getImageLoader().displayImage(ivImg.getContext(), path, ivImg);
             boolean containsCurrent = ImagePicker.getInstance().getSelectedImages().contains(imageItem);
             ivCheck.setSelected(containsCurrent);
             mask.setVisibility(ivCheck.isSelected() ? View.VISIBLE : View.GONE);

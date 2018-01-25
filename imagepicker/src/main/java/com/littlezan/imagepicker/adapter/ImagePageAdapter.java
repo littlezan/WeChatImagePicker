@@ -45,7 +45,8 @@ public class ImagePageAdapter extends PagerAdapter {
         Context context = container.getContext();
         PhotoView photoView = new PhotoView(context);
         ImageItem imageItem = images.get(position);
-        ImagePicker.getInstance().getImageLoader().displayImage(context, imageItem.path, photoView);
+        String path = imageItem.cropUri == null ? imageItem.path : imageItem.cropUri.getPath();
+        ImagePicker.getInstance().getImageLoader().displayImage(context, path, photoView);
         photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
 
             @Override

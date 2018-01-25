@@ -10,6 +10,8 @@ import android.view.View;
 
 import com.littlezan.imagepicker.ImagePicker;
 import com.littlezan.imagepicker.R;
+import com.littlezan.imagepicker.util.thirdlib.UCropUtil;
+import com.yalantis.ucrop.UCrop;
 
 /**
  * ClassName: ReCropImageActivity
@@ -19,7 +21,7 @@ import com.littlezan.imagepicker.R;
  * @version 1.0
  * @since 2018-01-24  19:13
  */
-public class ReCropImageActivity extends BaseImageCropActivity implements View.OnClickListener {
+public class ReCropImageActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     public static final String KEY_URI_SOURCE = "key_uri_source";
@@ -78,7 +80,7 @@ public class ReCropImageActivity extends BaseImageCropActivity implements View.O
     }
 
     private void initView() {
-        ImagePicker.getInstance().getImageLoader().displayImage(this, sourceUri.getPath(), photoView);
+        ImagePicker.getInstance().getImageLoader().displayImage(this, resultUri.getPath(), photoView);
     }
 
     @Override
@@ -88,7 +90,26 @@ public class ReCropImageActivity extends BaseImageCropActivity implements View.O
             setResult(Activity.RESULT_OK);
             finish();
         } else if (viewId == R.id.tv_re_crop) {
-            startCrop(sourceUri);
+            UCropUtil.start(this, sourceUri);
+        }
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case UCrop.REQUEST_CROP:
+                    //图片裁剪
+                    Uri uri = UCrop.getOutput(data);
+                    if (uri != null) {
+                        ImagePicker.getInstance().getImageLoader().displayImage(this, uri.getPath(), photoView);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

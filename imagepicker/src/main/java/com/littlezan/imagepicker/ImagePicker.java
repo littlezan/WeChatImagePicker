@@ -35,6 +35,8 @@ import java.util.UUID;
 public class ImagePicker {
 
 
+
+
     public enum ModeMediaType {
         /**
          * 图片
@@ -274,16 +276,31 @@ public class ImagePicker {
         mImageSelectedListeners.remove(l);
     }
 
+    public void notifyImageItemChanged(ImageItem currentItem) {
+        if (mImageSelectedListeners != null) {
+            for (OnImageSelectedListener mImageSelectedListener : mImageSelectedListeners) {
+                mImageSelectedListener.onImageItemChange(currentItem);
+            }
+        }
+    }
+
+
     /**
      * 图片选中的监听
      */
     public interface OnImageSelectedListener {
         /**
          * 选中了图片
-         *  @param item     item
+         *  @param imageItem     imageItem
          * @param isAdd    isAdd
          */
-        void onImageSelected(ImageItem item, boolean isAdd);
+        void onImageSelected(ImageItem imageItem, boolean isAdd);
+
+        /**
+         * 数据发生改变
+         * @param imageItem imageItem
+         */
+        void onImageItemChange(ImageItem imageItem);
     }
 
 }

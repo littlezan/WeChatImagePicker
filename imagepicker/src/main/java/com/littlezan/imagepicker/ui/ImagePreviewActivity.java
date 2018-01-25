@@ -40,7 +40,6 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
     private android.support.v7.widget.Toolbar toolbar;
     private android.support.v4.view.ViewPager viewPager;
     private android.support.v7.widget.RecyclerView recyclerView;
-    private android.widget.TextView tvCrop;
     private android.widget.TextView tvSelect;
     private android.widget.RelativeLayout llBottom;
 
@@ -50,6 +49,7 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
      */
     protected int currentPosition = 0;
     private ImagePreviewHorizontalCellAdapter horizontalCellAdapter;
+    private ImagePageAdapter imagePageAdapter;
 
 
     public static void start(Context context, int currentPosition) {
@@ -65,7 +65,7 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
         setContentView(R.layout.activity_image_preview);
         this.llBottom = findViewById(R.id.ll_bottom);
         this.tvSelect = findViewById(R.id.tv_select);
-        this.tvCrop = findViewById(R.id.tv_crop);
+        android.widget.TextView tvCrop = findViewById(R.id.tv_crop);
         this.recyclerView = findViewById(R.id.recycler_view);
         this.viewPager = findViewById(R.id.view_pager);
 //        this.appBarLayout = findViewById(R.id.app_bar_layout);
@@ -122,7 +122,7 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
     }
 
     private void initViewPager() {
-        ImagePageAdapter imagePageAdapter = new ImagePageAdapter(ImagePicker.getInstance().getCurrentImageFolderItems());
+        imagePageAdapter = new ImagePageAdapter(ImagePicker.getInstance().getCurrentImageFolderItems());
         viewPager.setAdapter(imagePageAdapter);
         imagePageAdapter.setPhotoViewClickListener(new ImagePageAdapter.PhotoViewClickListener() {
             @Override
@@ -233,5 +233,11 @@ public class ImagePreviewActivity extends BaseImageCropActivity implements View.
     }
 
 
-
+    @Override
+    protected void handleReCropResult(Uri resultUri) {
+        ImageItem currentItem = ImagePicker.getInstance().getCurrentImageFolderItems().get(currentPosition);
+        currentItem.cropUri = resultUri;
+        imagePageAdapter.notifyDataSetChanged();
+        ImagePicker.getInstance().notifyImageItemChanged(currentItem);
+    }
 }

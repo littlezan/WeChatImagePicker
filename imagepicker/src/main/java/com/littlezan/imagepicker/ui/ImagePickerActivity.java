@@ -195,14 +195,20 @@ public class ImagePickerActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onImageSelected(ImageItem item, boolean isAdd) {
+    public void onImageSelected(ImageItem imageItem, boolean isAdd) {
         int selectImageCount = ImagePicker.getInstance().getSelectedImages().size();
         if (selectImageCount > 0) {
             tvNavRight.setText(getString(R.string.ip_select_complete, selectImageCount, ImagePicker.getInstance().getSelectLimit()));
         } else {
             tvNavRight.setText("完成");
         }
-        int notifyItemPosition = imageCellAdapter.getItems().indexOf(item);
+        int notifyItemPosition = imageCellAdapter.getItems().indexOf(imageItem);
+        imageCellAdapter.notifyItemChanged(notifyItemPosition);
+    }
+
+    @Override
+    public void onImageItemChange(ImageItem imageItem) {
+        int notifyItemPosition = imageCellAdapter.getItems().indexOf(imageItem);
         imageCellAdapter.notifyItemChanged(notifyItemPosition);
     }
 

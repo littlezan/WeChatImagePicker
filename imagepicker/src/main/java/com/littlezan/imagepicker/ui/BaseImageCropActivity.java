@@ -19,11 +19,12 @@ import com.yalantis.ucrop.UCrop;
 public abstract class BaseImageCropActivity extends AppCompatActivity {
 
     public static final int REQUEST_RE_COPE = UCrop.REQUEST_CROP + 10;
+    private Uri resultUri;
     private Uri sourceUri;
 
     public void startCrop(Uri uri) {
-        this.sourceUri = uri;
-        UCropUtil.start(this, this.sourceUri);
+        sourceUri = uri;
+        UCropUtil.start(this, sourceUri);
     }
 
 
@@ -34,22 +35,11 @@ public abstract class BaseImageCropActivity extends AppCompatActivity {
             switch (requestCode) {
                 case UCrop.REQUEST_CROP:
                     //图片裁剪
-                    Uri resultUri = UCrop.getOutput(data);
-//                    if (imageView != null) {
-//                        ImageLoader.newBuilder()
-//                                .isSkipMemoryCache(true)
-//                                .scaleType(ImageView.ScaleType.CENTER_CROP)
-//                                .build()
-//                                .show(imageView, resultUri);
-//                    }
+                    resultUri = UCrop.getOutput(data);
                     handleCropResult(resultUri);
-                    if (!(this instanceof ReCropImageActivity)) {
-                        ReCropImageActivity.startForResult(this, REQUEST_RE_COPE, sourceUri, resultUri);
-                    }
                     break;
                 case REQUEST_RE_COPE:
-
-//                    handleReCropResult(resultUri);
+                    handleReCropResult(resultUri);
                     break;
                 default:
                     break;
@@ -60,15 +50,15 @@ public abstract class BaseImageCropActivity extends AppCompatActivity {
         }
     }
 
-    private void handleReCropResult() {
+    protected void handleReCropResult(Uri resultUri) {
 
     }
 
     protected void handleCropResult(Uri resultUri){
-
+        ReCropImageActivity.startForResult(this, REQUEST_RE_COPE, sourceUri, resultUri);
     }
 
-    private void handleCropError(Intent data) {
+    protected void handleCropError(Intent data) {
 
     }
 
