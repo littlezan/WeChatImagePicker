@@ -56,7 +56,7 @@
             android:gravity="center"
             android:paddingLeft="18dp"
             android:paddingRight="18dp"
-            android:textColor="#FFFFFFFF"
+            android:textColor="@color/selector_text_commit_white"
             android:textSize="14sp"
             android:visibility="visible"
             tools:text="完成(9/9)"
@@ -70,7 +70,9 @@
         android:layout_width="match_parent"
         android:layout_height="110dp"
         android:layout_alignParentBottom="true"
-        android:background="#7F3E3E3E">
+        android:clickable="true"
+        android:background="#7F3E3E3E"
+        android:focusable="true">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

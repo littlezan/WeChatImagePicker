@@ -154,14 +154,23 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
 
     private void initToolbar() {
         tvNavCenter.setText("相机胶卷");
-        tvNavRight.setText("完成");
-        tvNavRight.setEnabled(ImagePicker.getInstance().getSelectedImages().size() > 0);
+        rendNavRight();
         ivNavLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+    }
+
+    private void rendNavRight() {
+        int selectImageCount = ImagePicker.getInstance().getSelectedImages().size();
+        if (selectImageCount > 0) {
+            tvNavRight.setText(getString(R.string.ip_select_complete, selectImageCount, ImagePicker.getInstance().getSelectLimit()));
+        } else {
+            tvNavRight.setText("完成");
+        }
+        tvNavRight.setEnabled(ImagePicker.getInstance().getSelectedImages().size() > 0);
     }
 
     private void initView() {
@@ -199,13 +208,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
 
     @Override
     public void onImageSelected(ImageItem imageItem, boolean isAdd) {
-        int selectImageCount = ImagePicker.getInstance().getSelectedImages().size();
-        if (selectImageCount > 0) {
-            tvNavRight.setText(getString(R.string.ip_select_complete, selectImageCount, ImagePicker.getInstance().getSelectLimit()));
-        } else {
-            tvNavRight.setText("完成");
-        }
-        tvNavRight.setEnabled(selectImageCount > 0);
+        rendNavRight();
         int notifyItemPosition = imageCellAdapter.getItems().indexOf(imageItem);
         imageCellAdapter.notifyItemChanged(notifyItemPosition);
     }
@@ -285,10 +288,6 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         CameraReCropImageActivity.startForResult(this, REQUEST_RE_COPE, sourceUri, resultUri);
     }
 
-    @Override
-    protected void handleReCropResult(Uri resultUri) {
-//        finish();
-    }
 
     @Override
     public void finish() {

@@ -38,14 +38,14 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
     public static final String EXTRA_SELECTED_IMAGE_POSITION = "extra_selected_image_position";
 
 
-    private android.widget.ImageView ivNavLeft;
-    private android.widget.TextView tvNavCenter;
-    private android.widget.TextView tvNavRight;
-    private android.support.v7.widget.Toolbar toolbar;
-    private ViewPager viewPager;
-    private android.support.v7.widget.RecyclerView recyclerView;
-    private android.widget.TextView tvSelect;
-    private android.widget.RelativeLayout llBottom;
+    protected android.widget.ImageView ivNavLeft;
+    protected android.widget.TextView tvNavCenter;
+    protected android.widget.TextView tvNavRight;
+    protected android.support.v7.widget.Toolbar toolbar;
+    protected ViewPager viewPager;
+    protected android.support.v7.widget.RecyclerView recyclerView;
+    protected android.widget.TextView tvSelect;
+    protected android.widget.RelativeLayout llBottom;
     protected TextView tvDelete;
     protected RelativeLayout rlCrop;
 
@@ -91,7 +91,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
     }
 
     private void initToolbar() {
-        tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, getImagePreviewSourceData().size()));
+        rendTitle();
         rendNavRight();
         ivNavLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,9 +102,14 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         tvNavRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(RESULT_CODE_FINISH_SELECT);
                 finish();
             }
         });
+    }
+
+    private void rendTitle() {
+        tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, getImagePreviewSourceData().size()));
     }
 
     private void rendNavRight() {
@@ -114,6 +119,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         } else {
             tvNavRight.setText("完成");
         }
+        tvNavRight.setEnabled(ImagePicker.getInstance().getSelectedImages().size() > 0);
     }
 
 
@@ -144,7 +150,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 ImageItem imageItem = getImagePreviewSourceData().get(position);
                 boolean isSelected = ImagePicker.getInstance().isSelect(imageItem);
                 tvSelect.setSelected(isSelected);
-                tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, getImagePreviewSourceData().size()));
+                rendTitle();
                 horizontalCellAdapter.setCurrentImageItem(imageItem);
                 horizontalCellAdapter.notifyDataSetChanged();
             }
@@ -234,9 +240,8 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 } else {
                     horizontalCellAdapter.removeData(currentItem);
                 }
-                setRecyclerViewVisible();
                 rendNavRight();
-                setResult(RESULT_CODE_FINISH_SELECT);
+                setRecyclerViewVisible();
             }
         } else if (id == R.id.tv_delete) {
             //删除
@@ -255,8 +260,9 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 ImageItem imageItemCurrent = getImagePreviewSourceData().get(currentPositionAfterDelete);
                 horizontalCellAdapter.setCurrentImageItem(imageItemCurrent);
                 horizontalCellAdapter.notifyDataSetChanged();
-                setRecyclerViewVisible();
                 rendNavRight();
+                rendTitle();
+                setRecyclerViewVisible();
             }
         } else if (id == R.id.tv_crop) {
             //裁剪
