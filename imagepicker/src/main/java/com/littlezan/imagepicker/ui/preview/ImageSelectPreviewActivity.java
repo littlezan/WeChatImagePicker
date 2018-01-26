@@ -34,8 +34,12 @@ public class ImageSelectPreviewActivity extends BaseImagePreviewActivity {
     }
 
     @Override
-    protected ArrayList<ImageItem> initImagePageAdapterData() {
-        return ImagePicker.getInstance().getSelectedImages();
+    protected ArrayList<ImageItem> getImagePreviewSourceData() {
+        ArrayList<ImageItem> selectedImages = ImagePicker.getInstance().getSelectedImages();
+        if (selectedImages == null) {
+            selectedImages = new ArrayList<>();
+        }
+        return selectedImages;
     }
 
     @Override

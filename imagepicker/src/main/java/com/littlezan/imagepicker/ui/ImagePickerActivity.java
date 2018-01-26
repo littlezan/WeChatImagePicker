@@ -262,27 +262,21 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //如果是裁剪，因为裁剪指定了存储的Uri，所以返回的data一定为null
-            switch (requestCode) {
-                case REQUEST_CODE_TAKE:
-                    if (resultCode == Activity.RESULT_OK) {
-                        //发送广播通知图片增加了
-//                    ImagePicker.galleryAddPic(this, ImagePicker.getInstance().getTakeImageFile());
-                        String path = ImagePicker.getInstance().getTakeImageFile().getAbsolutePath();
-                        ImageItem imageItem = new ImageItem();
-                        imageItem.path = path;
-                        ImagePicker.getInstance().setCameraImageItem(imageItem);
-                        startCrop(Uri.fromFile(new File(path)));
-                    }
-                    break;
-                case REQUEST_CODE_FOLDER_PREVIEW:
-                    if (resultCode == RESULT_CODE_FINISH_SELECT) {
-                        finish();
-                    }
-                    break;
-                default:
-                    break;
-            }
+        switch (requestCode) {
+            case REQUEST_CODE_TAKE:
+                if (resultCode == Activity.RESULT_OK) {
+                    String path = ImagePicker.getInstance().getTakeImageFile().getAbsolutePath();
+                    startCrop(Uri.fromFile(new File(path)));
+                }
+                break;
+            case REQUEST_CODE_FOLDER_PREVIEW:
+                if (resultCode == RESULT_CODE_FINISH_SELECT) {
+                    finish();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
 

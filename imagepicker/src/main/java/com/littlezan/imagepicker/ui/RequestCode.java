@@ -32,5 +32,5 @@ public interface RequestCode {
     /**
      * 完成图片选择
      */
-    int RESULT_CODE_FINISH_SELECT = Activity.RESULT_OK + 1;
+    int RESULT_CODE_FINISH_SELECT = Activity.RESULT_OK + 100;
 }

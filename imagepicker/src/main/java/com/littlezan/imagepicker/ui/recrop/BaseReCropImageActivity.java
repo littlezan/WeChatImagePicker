@@ -10,7 +10,6 @@ import android.view.View;
 
 import com.littlezan.imagepicker.ImagePicker;
 import com.littlezan.imagepicker.R;
-import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.ui.RequestCode;
 import com.littlezan.imagepicker.util.thirdlib.UCropUtil;
 import com.yalantis.ucrop.UCrop;
@@ -31,28 +30,23 @@ public abstract class BaseReCropImageActivity extends AppCompatActivity implemen
 
     private com.github.chrisbanes.photoview.PhotoView photoView;
     private android.widget.ImageView ivNavLeft;
-    private android.widget.TextView tvNavRight;
-    private android.support.v7.widget.Toolbar toolbar;
-    private android.widget.TextView tvReCrop;
+    protected android.widget.TextView tvNavRight;
 
 
-    private Uri sourceUri;
-    private Uri resultUri;
+    protected Uri sourceUri;
+    protected Uri resultUri;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recrop);
-        this.tvReCrop = findViewById(R.id.tv_re_crop);
-        this.toolbar = findViewById(R.id.toolbar);
+        android.widget.TextView tvReCrop = findViewById(R.id.tv_re_crop);
         this.tvNavRight = findViewById(R.id.tv_nav_right);
         this.ivNavLeft = findViewById(R.id.iv_nav_left);
         this.photoView = findViewById(R.id.photo_view);
 
         tvReCrop.setOnClickListener(this);
-        tvNavRight.setOnClickListener(this);
-
 
         parseIntent();
         initToolbar();
@@ -80,16 +74,7 @@ public abstract class BaseReCropImageActivity extends AppCompatActivity implemen
     @Override
     public void onClick(View v) {
         int viewId = v.getId();
-        if (viewId == R.id.tv_nav_right) {
-            ImageItem cameraImageItem = ImagePicker.getInstance().getCameraImageItem();
-            if (cameraImageItem != null && sourceUri != null) {
-                if (cameraImageItem.path.equals(sourceUri.getPath())) {
-                    ImagePicker.getInstance().addSelectedImageItem(cameraImageItem, true);
-                }
-            }
-            setResult(Activity.RESULT_OK);
-            finish();
-        } else if (viewId == R.id.tv_re_crop) {
+      if (viewId == R.id.tv_re_crop) {
             UCropUtil.start(this, sourceUri);
         }
     }

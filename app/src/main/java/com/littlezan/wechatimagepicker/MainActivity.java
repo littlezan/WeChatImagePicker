@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static final int REQUEST_CODE_IMAGE_PICKER = 100;
     public static final int REQUEST_CODE_IMAGE_PREVIEW = 101;
+    public static final int REQUEST_CODE_IMAGE_VIDEO= 102;
 
     private android.widget.EditText etContent;
     private android.widget.ImageView ivImg;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.etContent = findViewById(R.id.et_content);
 
         ivImg.setOnClickListener(this);
+        ivVideo.setOnClickListener(this);
 
         initImagePicker();
         initView();
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (viewId == R.id.iv_img) {
             startPickerImage();
         } else if (viewId == R.id.iv_video) {
-
+            startPickerVideo();
         }
     }
 
@@ -84,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void startPreviewImage() {
         ImagePicker.getInstance().startPreview(this, REQUEST_CODE_IMAGE_PREVIEW);
+    }
+
+    private void startPickerVideo() {
+        ImagePicker.getInstance().startPicker(this, REQUEST_CODE_IMAGE_VIDEO, ImagePicker.ModeMediaType.MEDIA_TYPE_VIDEO, 9);
     }
 
     @Override
@@ -98,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (requestCode) {
                 case REQUEST_CODE_IMAGE_PICKER:
                 case REQUEST_CODE_IMAGE_PREVIEW:
+                case REQUEST_CODE_IMAGE_VIDEO:
                     ArrayList<ImageItem> selectedImages = ImagePicker.getInstance().getSelectedImages();
                     if (selectedImages != null && selectedImages.size() > 0) {
                             addImageAdapter.refreshData(selectedImages);

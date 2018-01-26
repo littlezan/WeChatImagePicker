@@ -63,7 +63,7 @@ public class ImagePreviewHorizontalCellAdapter extends RecyclerView.Adapter<Imag
         int position = items.indexOf(imageItem);
         items.remove(imageItem);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, getItemCount());
+        notifyItemRangeChanged(position-1, getItemCount());
     }
 
     public void setCurrentImageItem(ImageItem imageItem) {

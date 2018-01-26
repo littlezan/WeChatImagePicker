@@ -95,10 +95,6 @@ public class ImagePicker {
      */
     private int currentImageFolderPosition = 0;
 
-    /**
-     * 拍照生成的
-     */
-    private ImageItem cameraImageItem;
 
 
     public void startPicker(Activity activity, int requestCode, ModeMediaType modeMediaType, int selectLimit) {
@@ -158,14 +154,6 @@ public class ImagePicker {
 
     public boolean isSelect(ImageItem item) {
         return selectedImages.contains(item);
-    }
-
-    public ImageItem getCameraImageItem() {
-        return cameraImageItem;
-    }
-
-    public void setCameraImageItem(ImageItem cameraImageItem) {
-        this.cameraImageItem = cameraImageItem;
     }
 
     public void addSelectedImageItem(ImageItem item, boolean isAdd) {
@@ -241,7 +229,7 @@ public class ImagePicker {
     }
 
     /**
-     * 扫描图片
+     * 扫描图片 发送广播通知图片增加了
      */
     public static void galleryAddPic(Context context, File file) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);

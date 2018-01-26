@@ -35,8 +35,12 @@ public class ImageFolderPreviewActivity extends BaseImagePreviewActivity {
     }
 
     @Override
-    protected ArrayList<ImageItem> initImagePageAdapterData() {
-        return ImagePicker.getInstance().getCurrentImageFolderItems();
+    protected ArrayList<ImageItem> getImagePreviewSourceData() {
+        ArrayList<ImageItem> currentImageFolderItems = ImagePicker.getInstance().getCurrentImageFolderItems();
+        if (currentImageFolderItems == null) {
+            currentImageFolderItems = new ArrayList<>();
+        }
+        return currentImageFolderItems;
     }
 
 

@@ -56,7 +56,6 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
     protected int currentPosition = 0;
     private ImagePreviewHorizontalCellAdapter horizontalCellAdapter;
     private ImagePageAdapter imagePageAdapter;
-    private ArrayList<ImageItem> imageListSource;
 
 
     @Override
@@ -80,7 +79,6 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         tvCrop.setOnClickListener(this);
         parseIntent();
         initToolbar();
-        initData();
         initView();
     }
 
@@ -89,10 +87,11 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         if (intent != null) {
             currentPosition = intent.getIntExtra(EXTRA_SELECTED_IMAGE_POSITION, 0);
         }
+        getImagePreviewSourceData();
     }
 
     private void initToolbar() {
-        tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, ImagePicker.getInstance().getCurrentImageFolderItems().size()));
+        tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, getImagePreviewSourceData().size()));
         rendNavRight();
         ivNavLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,12 +116,9 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         }
     }
 
-    private void initData() {
-        imageListSource = initImagePageAdapterData();
-    }
 
     private void initView() {
-        ImageItem currentItem = imageListSource.get(currentPosition);
+        ImageItem currentItem = getImagePreviewSourceData().get(currentPosition);
         tvSelect.setSelected(ImagePicker.getInstance().getSelectedImages().contains(currentItem));
         initViewPager();
         initRecyclerView();
@@ -130,7 +126,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
 
     private void initViewPager() {
 
-        imagePageAdapter = new ImagePageAdapter(imageListSource);
+        imagePageAdapter = new ImagePageAdapter(getImagePreviewSourceData());
         viewPager.setAdapter(imagePageAdapter);
         imagePageAdapter.setPhotoViewClickListener(new ImagePageAdapter.PhotoViewClickListener() {
             @Override
@@ -145,10 +141,10 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
             @Override
             public void onPageSelected(int position) {
                 currentPosition = position;
-                ImageItem imageItem = imageListSource.get(position);
+                ImageItem imageItem = getImagePreviewSourceData().get(position);
                 boolean isSelected = ImagePicker.getInstance().isSelect(imageItem);
                 tvSelect.setSelected(isSelected);
-                tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, imageListSource.size()));
+                tvNavCenter.setText(getString(R.string.ip_preview_image_count, currentPosition + 1, getImagePreviewSourceData().size()));
                 horizontalCellAdapter.setCurrentImageItem(imageItem);
                 horizontalCellAdapter.notifyDataSetChanged();
             }
@@ -160,7 +156,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
      *
      * @return ArrayList<ImageItem>
      */
-    protected abstract ArrayList<ImageItem> initImagePageAdapterData();
+    protected abstract ArrayList<ImageItem> getImagePreviewSourceData();
 
     private void initRecyclerView() {
         setRecyclerViewVisible();
@@ -170,12 +166,12 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         recyclerView.setHasFixedSize(true);
         horizontalCellAdapter = new ImagePreviewHorizontalCellAdapter();
         recyclerView.setAdapter(horizontalCellAdapter);
-        horizontalCellAdapter.setCurrentImageItem(imageListSource.get(currentPosition));
+        horizontalCellAdapter.setCurrentImageItem(getImagePreviewSourceData().get(currentPosition));
         horizontalCellAdapter.refreshData(ImagePicker.getInstance().getSelectedImages());
         horizontalCellAdapter.setOnItemClickListener(new ImagePreviewHorizontalCellAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, ImageItem imageItem) {
-                int position = imageListSource.indexOf(imageItem);
+                int position = getImagePreviewSourceData().indexOf(imageItem);
                 viewPager.setCurrentItem(position, false);
             }
         });
@@ -231,7 +227,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 Toast.makeText(tvSelect.getContext(), tvSelect.getContext().getString(R.string.ip_select_limit, selectLimit), Toast.LENGTH_SHORT).show();
             } else {
                 tvSelect.setSelected(!tvSelect.isSelected());
-                ImageItem currentItem = imageListSource.get(currentPosition);
+                ImageItem currentItem = getImagePreviewSourceData().get(currentPosition);
                 ImagePicker.getInstance().addSelectedImageItem(currentItem, tvSelect.isSelected());
                 if (tvSelect.isSelected()) {
                     horizontalCellAdapter.addData(currentItem);
@@ -243,20 +239,29 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 setResult(RESULT_CODE_FINISH_SELECT);
             }
         } else if (id == R.id.tv_delete) {
-            ImageItem currentItem = imageListSource.get(currentPosition);
-            ImagePicker.getInstance().addSelectedImageItem(currentItem, false);
-            horizontalCellAdapter.removeData(currentItem);
+            //删除
+            ImageItem imageItemDelete = getImagePreviewSourceData().get(currentPosition);
+            ImagePicker.getInstance().addSelectedImageItem(imageItemDelete, false);
+            horizontalCellAdapter.removeData(imageItemDelete);
             imagePageAdapter.notifyDataSetChanged();
-            setRecyclerViewVisible();
-            rendNavRight();
             if (ImagePicker.getInstance().getSelectedImages().size() == 0) {
+                //最后一个退出
                 finish();
+            } else {
+                //否则前移
+                int currentPositionAfterDelete = currentPosition - 1;
+                currentPositionAfterDelete = currentPositionAfterDelete < 0 ? 0 : currentPositionAfterDelete;
+                viewPager.setCurrentItem(currentPositionAfterDelete);
+                ImageItem imageItemCurrent = getImagePreviewSourceData().get(currentPositionAfterDelete);
+                horizontalCellAdapter.setCurrentImageItem(imageItemCurrent);
+                horizontalCellAdapter.notifyDataSetChanged();
+                setRecyclerViewVisible();
+                rendNavRight();
             }
-        } else {
-            if (id == R.id.tv_crop) {
-                ImageItem currentItem = imageListSource.get(currentPosition);
-                startCrop(Uri.fromFile(new File(currentItem.path)));
-            }
+        } else if (id == R.id.tv_crop) {
+            //裁剪
+            ImageItem currentItem = getImagePreviewSourceData().get(currentPosition);
+            startCrop(Uri.fromFile(new File(currentItem.path)));
         }
     }
 
@@ -267,7 +272,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
 
     @Override
     protected void handleReCropResult(Uri resultUri) {
-        ImageItem currentItem = imageListSource.get(currentPosition);
+        ImageItem currentItem = getImagePreviewSourceData().get(currentPosition);
         currentItem.cropUri = resultUri;
         imagePageAdapter.notifyDataSetChanged();
         ImagePicker.getInstance().notifyImageItemChanged(currentItem);
