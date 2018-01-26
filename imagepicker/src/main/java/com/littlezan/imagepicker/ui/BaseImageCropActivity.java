@@ -16,9 +16,8 @@ import com.yalantis.ucrop.UCrop;
  * @version 1.0
  * @since 2018-01-24  17:44
  */
-public abstract class BaseImageCropActivity extends AppCompatActivity {
+public abstract class BaseImageCropActivity extends AppCompatActivity implements RequestCode {
 
-    public static final int REQUEST_RE_COPE = UCrop.REQUEST_CROP + 10;
     private Uri resultUri;
     private Uri sourceUri;
 
@@ -31,34 +30,38 @@ public abstract class BaseImageCropActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case UCrop.REQUEST_CROP:
+        switch (requestCode) {
+            case REQUEST_U_CROP:
+                //uCrop 裁剪结果
+                if (resultCode == Activity.RESULT_OK) {
                     //图片裁剪
                     resultUri = UCrop.getOutput(data);
-                    handleCropResult(resultUri);
-                    break;
-                case REQUEST_RE_COPE:
+                    handleCropResult(sourceUri, resultUri);
+                } else if (resultCode == UCrop.RESULT_ERROR) {
+                    handleCropError(data);
+                }
+                break;
+            case REQUEST_RE_COPE:
+                if (resultCode == Activity.RESULT_OK) {
                     handleReCropResult(resultUri);
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (resultCode == UCrop.RESULT_ERROR) {
-            handleCropError(data);
+                } else if (resultCode == RESULT_CODE_FINISH_SELECT) {
+                    finish();
+                }
+                break;
+            default:
+                break;
         }
     }
 
-    protected void handleReCropResult(Uri resultUri) {
+    protected void handleCropResult(Uri sourceUri, Uri resultUri) {
 
-    }
-
-    protected void handleCropResult(Uri resultUri){
-        ReCropImageActivity.startForResult(this, REQUEST_RE_COPE, sourceUri, resultUri);
     }
 
     protected void handleCropError(Intent data) {
+
+    }
+
+    protected void handleReCropResult(Uri resultUri) {
 
     }
 

@@ -19,12 +19,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
         <activity
-            android:name=".ui.ImageFolderPreviewActivity"
+            android:name=".ui.preview.ImageFolderPreviewActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
         <activity
-            android:name=".ui.ImageSelectPreviewActivity"
+            android:name=".ui.preview.ImageSelectPreviewActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
@@ -37,9 +37,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:name=".ui.ReCropImageActivity"
+            android:name=".ui.recrop.PreviewReCropImageActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImagePickerTheme" />
+        <activity
+            android:name=".ui.recrop.CameraReCropImageActivity"
+            android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
 

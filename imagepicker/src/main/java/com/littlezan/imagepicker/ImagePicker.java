@@ -16,7 +16,7 @@ import com.littlezan.imagepicker.bean.ImageFolder;
 import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.loader.ImageLoader;
 import com.littlezan.imagepicker.ui.ImagePickerActivity;
-import com.littlezan.imagepicker.ui.ImageSelectPreviewActivity;
+import com.littlezan.imagepicker.ui.preview.ImageSelectPreviewActivity;
 import com.littlezan.imagepicker.util.ImagePickerUtils;
 import com.littlezan.imagepicker.util.ProviderUtil;
 
@@ -34,8 +34,6 @@ import java.util.UUID;
  * @since 2018-01-22  10:58
  */
 public class ImagePicker {
-
-
 
 
     public enum ModeMediaType {
@@ -62,7 +60,7 @@ public class ImagePicker {
         private static final ImagePicker INSTANCE = new ImagePicker();
     }
 
-    public static final int REQUEST_CODE_TAKE = 1001;
+
 
     private File takeImageFile;
 
@@ -206,7 +204,6 @@ public class ImagePicker {
             //照相机有自己默认的存储路径，拍摄的照片将返回一个缩略图。如果想访问原始图片，
             //可以通过dat extra能够得到原始图片位置。即，如果指定了目标uri，data就没有数据，
             //如果没有指定uri，则data就返回有数据！
-            //
             Uri uri;
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
                 uri = Uri.fromFile(takeImageFile);
@@ -309,13 +306,15 @@ public class ImagePicker {
     public interface OnImageSelectedListener {
         /**
          * 选中了图片
-         *  @param imageItem     imageItem
-         * @param isAdd    isAdd
+         *
+         * @param imageItem imageItem
+         * @param isAdd     isAdd
          */
         void onImageSelected(ImageItem imageItem, boolean isAdd);
 
         /**
          * 数据发生改变
+         *
          * @param imageItem imageItem
          */
         void onImageItemChange(ImageItem imageItem);

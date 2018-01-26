@@ -1,6 +1,6 @@
-package com.littlezan.imagepicker.ui;
+package com.littlezan.imagepicker.ui.preview;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,13 +19,13 @@ import java.util.ArrayList;
  * @version 1.0
  * @since 2018-01-23  15:36
  */
-public class ImageFolderPreviewActivity extends BaseImagePreviewActivity{
+public class ImageFolderPreviewActivity extends BaseImagePreviewActivity {
 
 
-    public static void start(Context context, int currentPositionInFolder) {
-        Intent intent = new Intent(context, ImageFolderPreviewActivity.class);
+    public static void start(Activity activity, int requestCode, int currentPositionInFolder) {
+        Intent intent = new Intent(activity, ImageFolderPreviewActivity.class);
         intent.putExtra(EXTRA_SELECTED_IMAGE_POSITION, currentPositionInFolder);
-        context.startActivity(intent);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     @Override

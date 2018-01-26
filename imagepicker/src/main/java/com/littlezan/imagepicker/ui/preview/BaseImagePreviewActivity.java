@@ -1,4 +1,4 @@
-package com.littlezan.imagepicker.ui;
+package com.littlezan.imagepicker.ui.preview;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -19,6 +19,8 @@ import com.littlezan.imagepicker.R;
 import com.littlezan.imagepicker.adapter.ImagePageAdapter;
 import com.littlezan.imagepicker.adapter.ImagePreviewHorizontalCellAdapter;
 import com.littlezan.imagepicker.bean.ImageItem;
+import com.littlezan.imagepicker.ui.BaseImageCropActivity;
+import com.littlezan.imagepicker.ui.recrop.PreviewReCropImageActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -155,7 +157,8 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
 
     /**
      * 初始化 数据源
-     * @return
+     *
+     * @return ArrayList<ImageItem>
      */
     protected abstract ArrayList<ImageItem> initImagePageAdapterData();
 
@@ -237,6 +240,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 }
                 setRecyclerViewVisible();
                 rendNavRight();
+                setResult(RESULT_CODE_FINISH_SELECT);
             }
         } else if (id == R.id.tv_delete) {
             ImageItem currentItem = imageListSource.get(currentPosition);
@@ -256,6 +260,10 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         }
     }
 
+    @Override
+    protected void handleCropResult(Uri sourceUri, Uri resultUri) {
+        PreviewReCropImageActivity.startForResult(this, REQUEST_RE_COPE, sourceUri, resultUri);
+    }
 
     @Override
     protected void handleReCropResult(Uri resultUri) {

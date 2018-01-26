@@ -1,5 +1,6 @@
 package com.littlezan.imagepicker.adapter;
 
+import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,8 @@ import com.littlezan.imagepicker.R;
 import com.littlezan.imagepicker.bean.ImageCamera;
 import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.bean.ImageVideo;
-import com.littlezan.imagepicker.ui.ImageFolderPreviewActivity;
+import com.littlezan.imagepicker.ui.ImagePickerActivity;
+import com.littlezan.imagepicker.ui.preview.ImageFolderPreviewActivity;
 
 import java.util.ArrayList;
 
@@ -45,6 +47,11 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private OnItemClickListener onItemClickListener;
 
+    private Activity activity;
+
+    public ImageCellAdapter(Activity activity) {
+        this.activity = activity;
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -178,7 +185,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
 
-    public static class NormalViewHolder extends RecyclerView.ViewHolder {
+    public class NormalViewHolder extends RecyclerView.ViewHolder {
         ImageView ivImg;
         ImageView ivCheck;
         View mask;
@@ -213,7 +220,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 @Override
                 public void onClick(View v) {
                     int currentPositionInFolder = position - 1;
-                    ImageFolderPreviewActivity.start(ivImg.getContext(), currentPositionInFolder);
+                        ImageFolderPreviewActivity.start(activity, ImagePickerActivity.REQUEST_CODE_FOLDER_PREVIEW, currentPositionInFolder);
                 }
             });
 

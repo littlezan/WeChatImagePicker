@@ -25,6 +25,7 @@ import com.littlezan.imagepicker.adapter.ImageFolderAdapter;
 import com.littlezan.imagepicker.bean.ImageFolder;
 import com.littlezan.imagepicker.bean.ImageItem;
 import com.littlezan.imagepicker.decoration.GridSpacingItemDecoration;
+import com.littlezan.imagepicker.ui.recrop.CameraReCropImageActivity;
 import com.littlezan.imagepicker.util.ImagePickerUtils;
 import com.littlezan.imagepicker.view.FolderPopUpWindow;
 
@@ -42,6 +43,10 @@ import java.util.List;
  */
 public class ImagePickerActivity extends BaseImageCropActivity implements View.OnClickListener, ImagePicker.OnImageSelectedListener {
 
+    /**
+     * 预览界面
+     */
+    public static final int REQUEST_CODE_FOLDER_PREVIEW = 10;
 
     public static final int REQUEST_PERMISSION_STORAGE = 0x01;
     public static final int REQUEST_PERMISSION_CAMERA = 0x02;
@@ -136,7 +141,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
             }
         } else if (requestCode == REQUEST_PERMISSION_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                ImagePicker.getInstance().takePicture(this, ImagePicker.REQUEST_CODE_TAKE);
+                ImagePicker.getInstance().takePicture(this, REQUEST_CODE_TAKE);
             } else {
                 Toast.makeText(this, "权限被禁止，无法打开相机", Toast.LENGTH_SHORT).show();
             }
@@ -163,7 +168,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(GridSpacingItemDecoration.newBuilder().spacing(ImagePickerUtils.dp2px(this, 4)).build());
-        imageCellAdapter = new ImageCellAdapter();
+        imageCellAdapter = new ImageCellAdapter(this);
         recyclerView.setAdapter(imageCellAdapter);
         imageCellAdapter.setOnItemClickListener(new ImageCellAdapter.OnItemClickListener() {
             @Override
@@ -173,14 +178,12 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
                         if (!(checkPermission(Manifest.permission.CAMERA))) {
                             ActivityCompat.requestPermissions(ImagePickerActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
                         } else {
-                            ImagePicker.getInstance().takePicture(ImagePickerActivity.this, ImagePicker.REQUEST_CODE_TAKE);
+                            ImagePicker.getInstance().takePicture(ImagePickerActivity.this, REQUEST_CODE_TAKE);
                         }
                     }
                 }
             }
         });
-
-
         createPopupFolderList();
     }
 
@@ -260,23 +263,38 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //如果是裁剪，因为裁剪指定了存储的Uri，所以返回的data一定为null
-        if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case ImagePicker.REQUEST_CODE_TAKE:
-                    //发送广播通知图片增加了
-                    ImagePicker.galleryAddPic(this, ImagePicker.getInstance().getTakeImageFile());
-                    String path = ImagePicker.getInstance().getTakeImageFile().getAbsolutePath();
-                    ImageItem imageItem = new ImageItem();
-                    imageItem.path = path;
-                    ImagePicker.getInstance().setCameraImageItem(imageItem);
-                    startCrop(Uri.fromFile(new File(path)));
+                case REQUEST_CODE_TAKE:
+                    if (resultCode == Activity.RESULT_OK) {
+                        //发送广播通知图片增加了
+//                    ImagePicker.galleryAddPic(this, ImagePicker.getInstance().getTakeImageFile());
+                        String path = ImagePicker.getInstance().getTakeImageFile().getAbsolutePath();
+                        ImageItem imageItem = new ImageItem();
+                        imageItem.path = path;
+                        ImagePicker.getInstance().setCameraImageItem(imageItem);
+                        startCrop(Uri.fromFile(new File(path)));
+                    }
+                    break;
+                case REQUEST_CODE_FOLDER_PREVIEW:
+                    if (resultCode == RESULT_CODE_FINISH_SELECT) {
+                        finish();
+                    }
                     break;
                 default:
                     break;
             }
-        }
     }
 
+
+    @Override
+    protected void handleCropResult(Uri sourceUri, Uri resultUri) {
+        CameraReCropImageActivity.startForResult(this, REQUEST_RE_COPE, sourceUri, resultUri);
+    }
+
+    @Override
+    protected void handleReCropResult(Uri resultUri) {
+//        finish();
+    }
 
     @Override
     public void finish() {
@@ -284,8 +302,4 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         super.finish();
     }
 
-    @Override
-    protected void handleReCropResult(Uri resultUri) {
-        finish();
-    }
 }

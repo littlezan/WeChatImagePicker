@@ -1,4 +1,4 @@
-package com.littlezan.imagepicker.ui;
+package com.littlezan.imagepicker.ui.recrop;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,18 +11,19 @@ import android.view.View;
 import com.littlezan.imagepicker.ImagePicker;
 import com.littlezan.imagepicker.R;
 import com.littlezan.imagepicker.bean.ImageItem;
+import com.littlezan.imagepicker.ui.RequestCode;
 import com.littlezan.imagepicker.util.thirdlib.UCropUtil;
 import com.yalantis.ucrop.UCrop;
 
 /**
- * ClassName: ReCropImageActivity
+ * ClassName: BaseReCropImageActivity
  * Description: 重新裁剪
  *
  * @author 彭赞
  * @version 1.0
  * @since 2018-01-24  19:13
  */
-public class ReCropImageActivity extends AppCompatActivity implements View.OnClickListener {
+public abstract class BaseReCropImageActivity extends AppCompatActivity implements RequestCode, View.OnClickListener {
 
 
     public static final String KEY_URI_SOURCE = "key_uri_source";
@@ -37,14 +38,6 @@ public class ReCropImageActivity extends AppCompatActivity implements View.OnCli
 
     private Uri sourceUri;
     private Uri resultUri;
-
-
-    public static void startForResult(AppCompatActivity appCompatActivity, int requestCode, Uri sourceUri, Uri resultUri) {
-        Intent intent = new Intent(appCompatActivity, ReCropImageActivity.class);
-        intent.putExtra(KEY_URI_SOURCE, sourceUri);
-        intent.putExtra(KEY_URI_RESULT, resultUri);
-        appCompatActivity.startActivityForResult(intent, requestCode);
-    }
 
 
     @Override

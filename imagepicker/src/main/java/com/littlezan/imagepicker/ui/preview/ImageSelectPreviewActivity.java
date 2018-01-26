@@ -1,4 +1,4 @@
-package com.littlezan.imagepicker.ui;
+package com.littlezan.imagepicker.ui.preview;
 
 import android.app.Activity;
 import android.content.Intent;
