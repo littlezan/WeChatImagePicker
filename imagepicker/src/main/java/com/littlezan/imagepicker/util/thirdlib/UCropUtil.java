@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import com.littlezan.imagepicker.ui.ucrop.UCropCustomActivity;
-import com.littlezan.imagepicker.util.NougatTools;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
@@ -42,7 +41,7 @@ public class UCropUtil {
 
     private static UCrop getUCrop(Context context, @NonNull Uri uri) {
         String destinationFileName = SAMPLE_CROPPED_IMAGE_NAME + UUID.randomUUID().toString() + SUFFIX;
-        Uri destination = NougatTools.formatFileProviderUri(context, new File(context.getCacheDir(), destinationFileName));
+        Uri destination = Uri.fromFile(new File(context.getCacheDir(), destinationFileName));
         UCrop uCrop = UCrop.of(uri, destination);
         uCrop = basisConfig(uCrop);
         uCrop = advancedConfig(context, uCrop);
