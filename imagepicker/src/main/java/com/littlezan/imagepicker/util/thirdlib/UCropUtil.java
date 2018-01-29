@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 
 import com.littlezan.imagepicker.ui.ucrop.UCropCustomActivity;
 import com.littlezan.imagepicker.util.NougatTools;
@@ -15,7 +14,6 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropActivity;
 
 import java.io.File;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -32,20 +30,8 @@ public class UCropUtil {
     private static final int MAX_WIDTH = 1080;
     private static final int MAX_HEIGHT = 1920;
     private static final String SAMPLE_CROPPED_IMAGE_NAME = "TelepathyCropImage_";
-    private static final String SUFFIX = ".png";
+    private static final String SUFFIX = ".jpg";
 
-
-    public static void start(@NonNull Fragment fragment, @NonNull List<Uri> uris) {
-        if (!uris.isEmpty()) {
-            start(fragment, uris.get(0));
-        }
-    }
-
-    public static void start(@NonNull Fragment fragment, @NonNull Uri uri) {
-        Context context = fragment.getContext();
-        UCrop uCrop = getUCrop(context, uri);
-        uCrop.start(context, fragment);
-    }
 
     public static void start(@NonNull Activity activity, @NonNull Uri uri) {
         UCrop uCrop = getUCrop(activity, uri);
@@ -73,11 +59,11 @@ public class UCropUtil {
 
     private static UCrop advancedConfig(Context context, UCrop uCrop) {
         UCrop.Options options = new UCrop.Options();
-        options.setCompressionFormat(Bitmap.CompressFormat.PNG);
+        options.setCompressionFormat(Bitmap.CompressFormat.JPEG);
         options.setCompressionQuality(50);
         options.setHideBottomControls(true);
         //设置裁剪图片可操作的手势
-        options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.ROTATE, UCropActivity.ALL);
+        options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.NONE, UCropActivity.NONE);
         //设置toolbar颜色
 //        options.setToolbarColor(Color.parseColor("#7F3E3E3E"));
 //        options.setToolbarWidgetColor(ContextCompat.getColor(context, R.color.colorAccent));
