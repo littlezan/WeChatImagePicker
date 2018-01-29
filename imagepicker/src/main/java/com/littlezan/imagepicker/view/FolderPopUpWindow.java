@@ -5,6 +5,8 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -31,7 +33,7 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
     private ListView listView;
     private OnPopUpWindowInteraction onPopUpWindowInteraction;
     private final View masker;
-//    private final View marginView;
+    //    private final View marginView;
     private int marginPx;
     private int listViewHeight;
 
@@ -68,10 +70,19 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
 
     }
 
+    public void show(View anchor) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            showAsDropDown(anchor, 0, 0);
+        } else {
+            // 适配 android 7.0
+            int[] location = new int[2];
+            anchor.getLocationOnScreen(location);
+            showAtLocation(anchor, Gravity.NO_GRAVITY, 0, location[1]+anchor.getHeight());
+        }
+        startEnterAnimatorBefore();
+    }
 
-    @Override
-    public void showAsDropDown(View anchor, int xoff, int yoff, int gravity) {
-        super.showAsDropDown(anchor, xoff, yoff, gravity);
+    private void startEnterAnimatorBefore() {
         if (listViewHeight == 0) {
             listView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -85,7 +96,6 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
             enterAnimator();
         }
     }
-
 
     private void enterAnimator() {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(masker, "alpha", 0, 1);
@@ -104,7 +114,6 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         }
         exitAnimator();
     }
-
 
 
     private void exitAnimator() {

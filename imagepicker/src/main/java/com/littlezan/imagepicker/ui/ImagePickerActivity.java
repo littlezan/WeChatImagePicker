@@ -237,7 +237,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         if (i == R.id.fl_center) {
             //标题
             if (mImageFolders == null) {
-                Log.i("ImageGridActivity", "您的手机没有图片");
+                Log.d(TAG, "您的手机没有图片");
                 return;
             }
             if (mFolderPopupWindow.isShowing()) {
@@ -251,10 +251,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
                 int index = imageFolderAdapter.getSelectIndex();
                 index = index == 0 ? index : index - 1;
                 mFolderPopupWindow.setSelection(index);
-
-                int[] location = new int[2];
-                tvNavCenter.getLocationOnScreen(location);
-                mFolderPopupWindow.showAsDropDown(tvNavCenter, location[0], 0);
+                mFolderPopupWindow.show(tvNavCenter);
             }
 
         } else if (i == R.id.tv_nav_right) {
@@ -268,7 +265,6 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
 
 
     private void arrowAnimatorDown() {
-        Log.d(TAG, "lll arrowAnimatorDown");
         ivArrowDown.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotation(0).start();
     }
 
