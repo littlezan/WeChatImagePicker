@@ -101,8 +101,8 @@ public class ImagePicker {
         this.selectLimit = selectLimit;
     }
 
-    public void startPreview(Activity activity, int requestCode) {
-        ImageSelectPreviewActivity.start(activity, requestCode);
+    public void startPreview(Activity activity, int requestCode, int currentPositionInSelectList) {
+        ImageSelectPreviewActivity.start(activity, requestCode, currentPositionInSelectList);
     }
 
 

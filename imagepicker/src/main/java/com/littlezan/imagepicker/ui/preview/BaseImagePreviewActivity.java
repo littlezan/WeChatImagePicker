@@ -76,6 +76,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
 
         tvSelect.setOnClickListener(this);
         tvDelete.setOnClickListener(this);
+        tvNavRight.setOnClickListener(this);
         tvCrop.setOnClickListener(this);
         parseIntent();
         initToolbar();
@@ -99,13 +100,6 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 finish();
             }
         });
-        tvNavRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(RESULT_CODE_FINISH_SELECT);
-                finish();
-            }
-        });
     }
 
     private void rendTitle() {
@@ -119,7 +113,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         } else {
             tvNavRight.setText("完成");
         }
-        tvNavRight.setEnabled(ImagePicker.getInstance().getSelectedImages().size() > 0);
+        tvNavRight.setSelected(ImagePicker.getInstance().getSelectedImages().size() > 0);
     }
 
 
@@ -225,7 +219,14 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.tv_select) {
+        if (id == R.id.tv_nav_right) {
+            if (ImagePicker.getInstance().getSelectedImages().size() == 0) {
+                Toast.makeText(this, "您还没有选择图片哦!", Toast.LENGTH_SHORT).show();
+            } else {
+                setResult(RESULT_CODE_FINISH_SELECT);
+                finish();
+            }
+        } else if (id == R.id.tv_select) {
             //选中
             int selectSize = ImagePicker.getInstance().getSelectedImages().size();
             int selectLimit = ImagePicker.getInstance().getSelectLimit();

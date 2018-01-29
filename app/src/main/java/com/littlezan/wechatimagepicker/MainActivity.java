@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static final int REQUEST_CODE_IMAGE_PICKER = 100;
     public static final int REQUEST_CODE_IMAGE_PREVIEW = 101;
-    public static final int REQUEST_CODE_IMAGE_VIDEO= 102;
+    public static final int REQUEST_CODE_IMAGE_VIDEO = 102;
 
     private android.widget.EditText etContent;
     private android.widget.ImageView ivImg;
@@ -64,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (item instanceof ImageAddMode) {
                     startPickerImage();
                 } else if (item instanceof ImageItem) {
-                    startPreviewImage();
+                    int currentPositionInSelectList = ImagePicker.getInstance().getSelectedImages().indexOf(item);
+                    startPreviewImage(currentPositionInSelectList);
                 }
             }
         });
@@ -84,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ImagePicker.getInstance().startPicker(this, REQUEST_CODE_IMAGE_PICKER, ImagePicker.ModeMediaType.MEDIA_TYPE_IMAGE, 9);
     }
 
-    private void startPreviewImage() {
-        ImagePicker.getInstance().startPreview(this, REQUEST_CODE_IMAGE_PREVIEW);
+    private void startPreviewImage(int currentPositionInSelectList) {
+        ImagePicker.getInstance().startPreview(this, REQUEST_CODE_IMAGE_PREVIEW, currentPositionInSelectList);
     }
 
     private void startPickerVideo() {
@@ -107,14 +108,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case REQUEST_CODE_IMAGE_VIDEO:
                     ArrayList<ImageItem> selectedImages = ImagePicker.getInstance().getSelectedImages();
                     if (selectedImages != null && selectedImages.size() > 0) {
-                            addImageAdapter.refreshData(selectedImages);
-                            recyclerView.setVisibility(View.VISIBLE);
-                            ivImg.setVisibility(View.GONE);
-                            ivVideo.setVisibility(View.GONE);
+                        addImageAdapter.refreshData(selectedImages);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        ivImg.setVisibility(View.GONE);
+                        ivVideo.setVisibility(View.GONE);
                     } else {
-                            recyclerView.setVisibility(View.GONE);
-                            ivImg.setVisibility(View.VISIBLE);
-                            ivVideo.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                        ivImg.setVisibility(View.VISIBLE);
+                        ivVideo.setVisibility(View.VISIBLE);
                     }
                     break;
                 default:

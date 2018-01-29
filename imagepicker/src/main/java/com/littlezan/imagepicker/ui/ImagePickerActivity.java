@@ -178,7 +178,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         } else {
             tvNavRight.setText("完成");
         }
-        tvNavRight.setEnabled(ImagePicker.getInstance().getSelectedImages().size() > 0);
+        tvNavRight.setSelected(ImagePicker.getInstance().getSelectedImages().size() > 0);
     }
 
     private void initView() {
@@ -255,7 +255,11 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
             }
 
         } else if (i == R.id.tv_nav_right) {
-            finish();
+            if (ImagePicker.getInstance().getSelectedImages().size() == 0) {
+                Toast.makeText(this, "您还没有选择图片哦!", Toast.LENGTH_SHORT).show();
+            } else {
+                finish();
+            }
         }
     }
 

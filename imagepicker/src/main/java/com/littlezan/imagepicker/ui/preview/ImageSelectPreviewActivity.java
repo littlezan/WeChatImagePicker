@@ -22,8 +22,9 @@ import java.util.ArrayList;
 public class ImageSelectPreviewActivity extends BaseImagePreviewActivity {
 
 
-    public static void start(Activity activity, int requestCode) {
+    public static void start(Activity activity, int requestCode, int currentPositionInSelectList) {
         Intent intent = new Intent(activity, ImageSelectPreviewActivity.class);
+        intent.putExtra(EXTRA_SELECTED_IMAGE_POSITION, currentPositionInSelectList);
         activity.startActivityForResult(intent, requestCode);
     }
 
