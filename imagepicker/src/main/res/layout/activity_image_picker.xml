@@ -6,83 +6,74 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_layout"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:targetApi="lollipop">
+        android:layout_height="?android:attr/actionBarSize"
+        app:contentInsetStart="0dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:layout_width="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_nav_left"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_toolbar_back"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
 
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            app:contentInsetStart="0dp"
-            app:layout_collapseMode="pin"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            tools:layout_width="match_parent">
-
-            <ImageView
-                android:id="@+id/iv_nav_left"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_toolbar_back"
-                tools:ignore="ContentDescription"
-                tools:visibility="visible" />
-
-
-            <LinearLayout
-                android:id="@+id/fl_center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:orientation="horizontal"
-                tools:ignore="UseCompoundDrawables">
-
-                <TextView
-                    android:id="@+id/tv_nav_center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:textColor="#FF000000"
-                    android:textSize="17sp"
-                    android:visibility="visible"
-                    tools:text="标题"
-                    tools:visibility="visible" />
-
-                <ImageView
-                    android:id="@+id/iv_arrow_down"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:src="@drawable/btn_photo_photogram"
-                    tools:ignore="ContentDescription" />
-            </LinearLayout>
-
+        <LinearLayout
+            android:id="@+id/fl_center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
 
             <TextView
-                android:id="@+id/tv_nav_right"
+                android:id="@+id/tv_nav_center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:gravity="center"
-                android:paddingLeft="18dp"
-                android:paddingRight="18dp"
-                android:textColor="@color/selector_text_commit"
-                android:textSize="15sp"
+                android:textColor="#FF000000"
+                android:textSize="17sp"
                 android:visibility="visible"
-                tools:text="确定"
+                tools:text="标题"
                 tools:visibility="visible" />
 
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+            <ImageView
+                android:id="@+id/iv_arrow_down"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/btn_photo_photogram"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tv_nav_right"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:textColor="@color/selector_text_commit"
+            android:textSize="15sp"
+            android:visibility="visible"
+            tools:text="确定"
+            tools:visibility="visible" />
+
+    </android.support.v7.widget.Toolbar>
 
 
     <android.support.v7.widget.RecyclerView

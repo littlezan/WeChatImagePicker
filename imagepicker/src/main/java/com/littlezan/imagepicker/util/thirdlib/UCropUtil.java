@@ -44,6 +44,7 @@ public class UCropUtil {
         Uri destination = Uri.fromFile(new File(context.getCacheDir(), destinationFileName));
         UCrop uCrop = UCrop.of(uri, destination);
         uCrop = basisConfig(uCrop);
+
         uCrop = advancedConfig(context, uCrop);
         return uCrop;
     }
