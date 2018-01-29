@@ -29,10 +29,11 @@ import com.littlezan.imagepicker.R;
 public class FolderPopUpWindow extends PopupWindow implements View.OnClickListener {
 
     private ListView listView;
-    private OnItemClickListener onItemClickListener;
+    private OnPopUpWindowInteraction onPopUpWindowInteraction;
     private final View masker;
 //    private final View marginView;
     private int marginPx;
+    private int listViewHeight;
 
     public FolderPopUpWindow(Context context, BaseAdapter adapter) {
         super(context);
@@ -56,34 +57,39 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(adapterView, view, position, l);
+                if (onPopUpWindowInteraction != null) {
+                    onPopUpWindowInteraction.onItemClick(adapterView, view, position, l);
                 }
             }
         });
 
         setAnimationStyle(0);
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//                int maxHeight = view.getHeight() * 5 / 8;
-//                int realHeight = listView.getHeight();
-//                ViewGroup.LayoutParams listParams = listView.getLayoutParams();
-//                listParams.height = realHeight > maxHeight ? maxHeight : realHeight;
-//                listView.setLayoutParams(listParams);
-//                LinearLayout.LayoutParams marginParams = (LinearLayout.LayoutParams) marginView.getLayoutParams();
-//                marginParams.height = marginPx;
-//                marginView.setLayoutParams(marginParams);
-//                enterAnimator();
-            }
-        });
+
+
+    }
+
+
+    @Override
+    public void showAsDropDown(View anchor, int xoff, int yoff, int gravity) {
+        super.showAsDropDown(anchor, xoff, yoff, gravity);
+        if (listViewHeight == 0) {
+            listView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    listView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    listViewHeight = listView.getHeight();
+                    enterAnimator();
+                }
+            });
+        } else {
+            enterAnimator();
+        }
     }
 
 
     private void enterAnimator() {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(masker, "alpha", 0, 1);
-        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", 0, listView.getHeight());
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", -listViewHeight, 0);
         AnimatorSet set = new AnimatorSet();
         set.setDuration(400);
         set.playTogether(alpha, translationY);
@@ -93,15 +99,17 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
 
     @Override
     public void dismiss() {
-        super.dismiss();
-//        exitAnimator();
+        if (onPopUpWindowInteraction != null) {
+            onPopUpWindowInteraction.onDismissPopUp();
+        }
+        exitAnimator();
     }
 
 
 
     private void exitAnimator() {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(masker, "alpha", 1, 0);
-        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", listView.getHeight(), 0);
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", 0, -listViewHeight);
         AnimatorSet set = new AnimatorSet();
         set.setDuration(300);
         set.playTogether(alpha, translationY);
@@ -119,6 +127,7 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                FolderPopUpWindow.super.dismiss();
             }
 
             @Override
@@ -128,8 +137,8 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         set.start();
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
+    public void setOnPopUpWindowInteraction(OnPopUpWindowInteraction listener) {
+        this.onPopUpWindowInteraction = listener;
     }
 
     public void setSelection(int selection) {
@@ -145,7 +154,9 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         dismiss();
     }
 
-    public interface OnItemClickListener {
+    public interface OnPopUpWindowInteraction {
         void onItemClick(AdapterView<?> adapterView, View view, int position, long l);
+
+        void onDismissPopUp();
     }
 }

@@ -17,7 +17,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.littlezan.imagepicker.ImageDataSource;
@@ -47,6 +46,8 @@ import java.util.List;
  */
 public class ImagePickerActivity extends BaseImageCropActivity implements View.OnClickListener, ImagePicker.OnImageSelectedListener {
 
+    private static final String TAG = "ImagePickerActivity";
+
     /**
      * 预览界面
      */
@@ -56,7 +57,6 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
     public static final int REQUEST_PERMISSION_CAMERA = 0x02;
 
     private android.widget.ImageView ivNavLeft;
-    private LinearLayout flCenter;
     private android.widget.TextView tvNavCenter;
     private ImageView ivArrowDown;
     private android.widget.TextView tvNavRight;
@@ -89,7 +89,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         this.recyclerView = findViewById(R.id.recycler_view);
         this.tvNavRight = findViewById(R.id.tv_nav_right);
         this.tvNavCenter = findViewById(R.id.tv_nav_center);
-        this.flCenter = findViewById(R.id.fl_center);
+        LinearLayout flCenter = findViewById(R.id.fl_center);
         this.ivArrowDown = findViewById(R.id.iv_arrow_down);
         this.ivNavLeft = findViewById(R.id.iv_nav_left);
 
@@ -190,6 +190,10 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         imageCellAdapter.setOnItemClickListener(new ImageCellAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position, Object item) {
+                if (ImagePicker.getInstance().getSelectedImages().size() >= ImagePicker.getInstance().getSelectLimit()) {
+                    Toast.makeText(view.getContext(), view.getContext().getString(R.string.ip_select_limit, ImagePicker.getInstance().getSelectLimit()), Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (position == 0) {
                     if (ImagePicker.getInstance().getModeMediaType() == ImagePicker.ModeMediaType.MEDIA_TYPE_IMAGE) {
                         if (!(checkPermission(Manifest.permission.CAMERA))) {
@@ -237,9 +241,8 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
                 return;
             }
             if (mFolderPopupWindow.isShowing()) {
-                mFolderPopupWindow.dismiss();
-                ivArrowDown.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationX(0).start();
                 arrowAnimatorDown();
+                mFolderPopupWindow.dismiss();
             } else {
                 arrowAnimatorUp();
                 //刷新数据
@@ -252,7 +255,6 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
                 int[] location = new int[2];
                 tvNavCenter.getLocationOnScreen(location);
                 mFolderPopupWindow.showAsDropDown(tvNavCenter, location[0], 0);
-
             }
 
         } else if (i == R.id.tv_nav_right) {
@@ -264,7 +266,9 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         ivArrowDown.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotation(-180).start();
     }
 
+
     private void arrowAnimatorDown() {
+        Log.d(TAG, "lll arrowAnimatorDown");
         ivArrowDown.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotation(0).start();
     }
 
@@ -274,7 +278,7 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
     private void createPopupFolderList() {
         imageFolderAdapter = new ImageFolderAdapter();
         mFolderPopupWindow = new FolderPopUpWindow(this, imageFolderAdapter);
-        mFolderPopupWindow.setOnItemClickListener(new FolderPopUpWindow.OnItemClickListener() {
+        mFolderPopupWindow.setOnPopUpWindowInteraction(new FolderPopUpWindow.OnPopUpWindowInteraction() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 imageFolderAdapter.setSelectIndex(position);
@@ -286,14 +290,13 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
                     tvNavCenter.setText(imageFolder.name);
                 }
             }
-        });
-        mFolderPopupWindow.setMargin(tvNavCenter.getHeight());
-        mFolderPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
             @Override
-            public void onDismiss() {
+            public void onDismissPopUp() {
                 arrowAnimatorDown();
             }
         });
+        mFolderPopupWindow.setMargin(tvNavCenter.getHeight());
 
     }
 
