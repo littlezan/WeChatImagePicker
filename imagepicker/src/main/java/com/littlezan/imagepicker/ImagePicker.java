@@ -9,8 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import com.littlezan.imagepicker.bean.ImageFolder;
 import com.littlezan.imagepicker.bean.ImageItem;
@@ -18,7 +16,7 @@ import com.littlezan.imagepicker.loader.ImageLoader;
 import com.littlezan.imagepicker.ui.ImagePickerActivity;
 import com.littlezan.imagepicker.ui.preview.ImageSelectPreviewActivity;
 import com.littlezan.imagepicker.util.ImagePickerUtils;
-import com.littlezan.imagepicker.util.ProviderUtil;
+import com.littlezan.imagepicker.util.NougatTools;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -201,7 +199,8 @@ public class ImagePicker {
                   7.0 调用系统相机拍照不再允许使用Uri方式，应该替换为FileProvider
                   并且这样可以解决MIUI系统上拍照返回size为0的情况
                  */
-                uri = FileProvider.getUriForFile(activity, ProviderUtil.getFileProviderName(activity), takeImageFile);
+//                uri = FileProvider.getUriForFile(activity, ProviderUtil.getFileProviderName(activity), takeImageFile);
+                uri = NougatTools.formatFileProviderUri(activity, takeImageFile);
                 //加入uri权限 要不三星手机不能拍照
                 List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
                 for (ResolveInfo resolveInfo : resInfoList) {
@@ -209,8 +208,6 @@ public class ImagePicker {
                     activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
             }
-
-            Log.e("nanchen", ProviderUtil.getFileProviderName(activity));
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
         activity.startActivityForResult(takePictureIntent, requestCode);

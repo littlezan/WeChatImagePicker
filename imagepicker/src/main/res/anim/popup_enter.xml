@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!-- 从屏幕上面进入 -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:duration="400"
     android:interpolator="@android:anim/accelerate_decelerate_interpolator">
@@ -6,6 +6,6 @@
         android:fromAlpha="0.0"
         android:toAlpha="1.0" />
     <translate
-        android:fromYDelta="0"
-        android:toYDelta="0.625" />
+        android:fromYDelta="-100%p"
+        android:toYDelta="0" />
 </set>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -51,11 +52,11 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         setFocusable(true);
         setOutsideTouchable(true);
         setBackgroundDrawable(new ColorDrawable(0));
-//        setAnimationStyle(R.style.PopupAnimation);
-//        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        setAnimationStyle(0);
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 //                int maxHeight = view.getHeight() * 5 / 8;
 //                int realHeight = listView.getHeight();
 //                ViewGroup.LayoutParams listParams = listView.getLayoutParams();
@@ -64,9 +65,9 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
 //                LinearLayout.LayoutParams marginParams = (LinearLayout.LayoutParams) marginView.getLayoutParams();
 //                marginParams.height = marginPx;
 //                marginView.setLayoutParams(marginParams);
-////                enterAnimator();
-//            }
-//        });
+                enterAnimator();
+            }
+        });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -77,10 +78,14 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         });
     }
 
+    @Override
+    public void showAsDropDown(View anchor) {
+        super.showAsDropDown(anchor);
+    }
 
     private void enterAnimator() {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(masker, "alpha", 0, 1);
-        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", listView.getHeight(), 0);
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", -listView.getHeight(), 0);
         AnimatorSet set = new AnimatorSet();
         set.setDuration(400);
         set.playTogether(alpha, translationY);
@@ -88,16 +93,16 @@ public class FolderPopUpWindow extends PopupWindow implements View.OnClickListen
         set.start();
     }
 
-//    @Override
-//    public void dismiss() {
-////        exitAnimator();
-//    }
+    @Override
+    public void dismiss() {
+        exitAnimator();
+    }
 
 
 
     private void exitAnimator() {
         ObjectAnimator alpha = ObjectAnimator.ofFloat(masker, "alpha", 1, 0);
-        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", 0, listView.getHeight());
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(listView, "translationY", 0, -listView.getHeight());
         AnimatorSet set = new AnimatorSet();
         set.setDuration(300);
         set.playTogether(alpha, translationY);
