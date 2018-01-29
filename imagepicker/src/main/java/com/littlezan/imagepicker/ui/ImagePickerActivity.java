@@ -13,7 +13,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.littlezan.imagepicker.ImageDataSource;
@@ -52,7 +56,9 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
     public static final int REQUEST_PERMISSION_CAMERA = 0x02;
 
     private android.widget.ImageView ivNavLeft;
+    private LinearLayout flCenter;
     private android.widget.TextView tvNavCenter;
+    private ImageView ivArrowDown;
     private android.widget.TextView tvNavRight;
     private android.support.v7.widget.RecyclerView recyclerView;
     private ImageCellAdapter imageCellAdapter;
@@ -83,9 +89,11 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
         this.recyclerView = findViewById(R.id.recycler_view);
         this.tvNavRight = findViewById(R.id.tv_nav_right);
         this.tvNavCenter = findViewById(R.id.tv_nav_center);
+        this.flCenter = findViewById(R.id.fl_center);
+        this.ivArrowDown = findViewById(R.id.iv_arrow_down);
         this.ivNavLeft = findViewById(R.id.iv_nav_left);
 
-        tvNavCenter.setOnClickListener(this);
+        flCenter.setOnClickListener(this);
         tvNavRight.setOnClickListener(this);
 
         initImagePicker();
@@ -222,22 +230,42 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
     @Override
     public void onClick(View view) {
         int i = view.getId();
-        if (i == R.id.tv_nav_center) {
+        if (i == R.id.fl_center) {
             //标题
             if (mImageFolders == null) {
                 Log.i("ImageGridActivity", "您的手机没有图片");
                 return;
             }
-            //刷新数据
-            imageFolderAdapter.refreshData(mImageFolders);
-            mFolderPopupWindow.showAsDropDown(tvNavCenter, 0, 0);
-            //默认选择当前选择的上一个，当目录很多时，直接定位到已选中的条目
-            int index = imageFolderAdapter.getSelectIndex();
-            index = index == 0 ? index : index - 1;
-            mFolderPopupWindow.setSelection(index);
+            if (mFolderPopupWindow.isShowing()) {
+                mFolderPopupWindow.dismiss();
+                ivArrowDown.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotationX(0).start();
+                arrowAnimatorDown();
+            } else {
+                arrowAnimatorUp();
+                //刷新数据
+                imageFolderAdapter.refreshData(mImageFolders);
+                //默认选择当前选择的上一个，当目录很多时，直接定位到已选中的条目
+                int index = imageFolderAdapter.getSelectIndex();
+                index = index == 0 ? index : index - 1;
+                mFolderPopupWindow.setSelection(index);
+
+                int[] location = new int[2];
+                tvNavCenter.getLocationOnScreen(location);
+                mFolderPopupWindow.showAsDropDown(tvNavCenter, location[0], 0);
+
+            }
+
         } else if (i == R.id.tv_nav_right) {
             finish();
         }
+    }
+
+    private void arrowAnimatorUp() {
+        ivArrowDown.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotation(-180).start();
+    }
+
+    private void arrowAnimatorDown() {
+        ivArrowDown.animate().setInterpolator(new AccelerateDecelerateInterpolator()).rotation(0).start();
     }
 
     /**
@@ -260,6 +288,13 @@ public class ImagePickerActivity extends BaseImageCropActivity implements View.O
             }
         });
         mFolderPopupWindow.setMargin(tvNavCenter.getHeight());
+        mFolderPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                arrowAnimatorDown();
+            }
+        });
+
     }
 
     @Override

@@ -90,7 +90,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             NormalViewHolder normalViewHolder = (NormalViewHolder) holder;
             if (o instanceof ImageItem) {
                 ImageItem imageItem = (ImageItem) o;
-                normalViewHolder.bind(imageItem, position);
+                normalViewHolder.bind(imageItem);
             }
         }
 
@@ -197,7 +197,7 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mask = itemView.findViewById(R.id.mask);
         }
 
-        void bind(final ImageItem imageItem, final int position) {
+        void bind(final ImageItem imageItem) {
             String path = imageItem.cropUri == null ? imageItem.path : imageItem.cropUri.getPath();
             ImagePicker.getInstance().getImageLoader().displayImage(ivImg.getContext(), path, ivImg);
             boolean containsCurrent = ImagePicker.getInstance().getSelectedImages().contains(imageItem);
@@ -219,8 +219,8 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ivImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int currentPositionInFolder = position - 1;
-                        ImageFolderPreviewActivity.start(activity, ImagePickerActivity.REQUEST_CODE_FOLDER_PREVIEW, currentPositionInFolder);
+                    int currentPositionInFolder = ImagePicker.getInstance().getCurrentImageFolderItems().indexOf(imageItem);
+                    ImageFolderPreviewActivity.start(activity, ImagePickerActivity.REQUEST_CODE_FOLDER_PREVIEW, currentPositionInFolder);
                 }
             });
 
