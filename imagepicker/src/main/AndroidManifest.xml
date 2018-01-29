@@ -51,7 +51,7 @@
         <!--适配Android 7.0 start -->
         <provider
             android:name=".util.MyFileProvider"
-            android:authorities="com.littlezan.imagepicker.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
