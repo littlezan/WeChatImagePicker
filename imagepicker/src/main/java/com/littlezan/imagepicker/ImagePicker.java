@@ -147,7 +147,11 @@ public class ImagePicker {
     }
 
     public ArrayList<ImageItem> getCurrentImageFolderItems() {
-        return imageFolders.get(currentImageFolderPosition).images;
+        if (imageFolders == null) {
+            return new ArrayList<>();
+        } else {
+            return imageFolders.get(currentImageFolderPosition).images;
+        }
     }
 
     public boolean isSelect(ImageItem item) {

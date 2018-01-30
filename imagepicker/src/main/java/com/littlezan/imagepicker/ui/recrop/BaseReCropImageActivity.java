@@ -11,8 +11,7 @@ import android.view.View;
 import com.littlezan.imagepicker.ImagePicker;
 import com.littlezan.imagepicker.R;
 import com.littlezan.imagepicker.ui.RequestCode;
-import com.littlezan.imagepicker.util.thirdlib.UCropUtil;
-import com.yalantis.ucrop.UCrop;
+import com.littlezan.imagepicker.ui.crop.ImageCropActivity;
 
 /**
  * ClassName: BaseReCropImageActivity
@@ -74,8 +73,8 @@ public abstract class BaseReCropImageActivity extends AppCompatActivity implemen
     @Override
     public void onClick(View v) {
         int viewId = v.getId();
-      if (viewId == R.id.tv_re_crop) {
-            UCropUtil.start(this, sourceUri);
+        if (viewId == R.id.tv_re_crop) {
+            ImageCropActivity.start(this, sourceUri);
         }
     }
 
@@ -83,18 +82,18 @@ public abstract class BaseReCropImageActivity extends AppCompatActivity implemen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case UCrop.REQUEST_CROP:
+        switch (requestCode) {
+            case REQUEST_COPE:
+                if (resultCode == Activity.RESULT_OK) {
                     //图片裁剪
-                    Uri uri = UCrop.getOutput(data);
-                    if (uri != null) {
-                        ImagePicker.getInstance().getImageLoader().displayImage(this, uri.getPath(), photoView);
+                    if (data != null) {
+                        Uri resultUri = data.getParcelableExtra(ImageCropActivity.KEY_INTENT_IMAGE_CROP_RESULT_URI);
+                        ImagePicker.getInstance().getImageLoader().displayImage(this, resultUri.getPath(), photoView);
                     }
-                    break;
-                default:
-                    break;
-            }
+                }
+                break;
+            default:
+                break;
         }
     }
 }

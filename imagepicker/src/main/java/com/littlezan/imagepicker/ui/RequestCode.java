@@ -2,7 +2,6 @@ package com.littlezan.imagepicker.ui;
 
 import android.app.Activity;
 
-import com.yalantis.ucrop.UCrop;
 
 /**
  * ClassName: RequestCode
@@ -20,17 +19,21 @@ public interface RequestCode {
      */
     int REQUEST_CODE_TAKE = 1001;
     /**
-     * UCrop 裁剪
+     * 新的裁剪方案
      */
-    int REQUEST_U_CROP = UCrop.REQUEST_CROP;
+    int REQUEST_COPE = 27;
     /**
      * 重新裁剪
      */
-    int REQUEST_RE_COPE = REQUEST_U_CROP + 1;
+    int REQUEST_RE_COPE = REQUEST_COPE + 1;
 
 
     /**
      * 完成图片选择
      */
     int RESULT_CODE_FINISH_SELECT = Activity.RESULT_OK + 100;
+    /**
+     * 裁剪失败
+     */
+    int RESULT_CODE_CROP_ERROR = RESULT_CODE_FINISH_SELECT + 100;
 }
