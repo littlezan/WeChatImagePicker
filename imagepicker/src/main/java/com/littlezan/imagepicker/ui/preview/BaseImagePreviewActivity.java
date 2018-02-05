@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
@@ -98,7 +99,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         ivNavLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                transitionFinish();
             }
         });
     }
@@ -225,7 +226,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
                 Toast.makeText(this, "您还没有选择图片哦!", Toast.LENGTH_SHORT).show();
             } else {
                 setResult(RESULT_CODE_FINISH_SELECT);
-                finish();
+                transitionFinish();
             }
         } else if (id == R.id.tv_select) {
             //选中
@@ -253,7 +254,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
             imagePageAdapter.notifyDataSetChanged();
             if (ImagePicker.getInstance().getSelectedImages().size() == 0) {
                 //最后一个退出
-                finish();
+                transitionFinish();
             } else {
                 //否则前移
                 int currentPositionAfterDelete = currentPosition - 1;
@@ -270,6 +271,14 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
             //裁剪
             ImageItem currentItem = getImagePreviewSourceData().get(currentPosition);
             startCrop(Uri.fromFile(new File(currentItem.path)));
+        }
+    }
+
+    private void transitionFinish() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAfterTransition();
+        }else{
+            finish();
         }
     }
 
