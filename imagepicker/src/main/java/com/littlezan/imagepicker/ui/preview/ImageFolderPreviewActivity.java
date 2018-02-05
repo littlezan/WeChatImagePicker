@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.littlezan.imagepicker.ImagePicker;
 import com.littlezan.imagepicker.bean.ImageItem;
@@ -22,10 +25,17 @@ import java.util.ArrayList;
 public class ImageFolderPreviewActivity extends BaseImagePreviewActivity {
 
 
-    public static void start(Activity activity, int requestCode, int currentPositionInFolder) {
+    public static void start(Activity activity, ImageView imageView, int requestCode, int currentPositionInFolder) {
         Intent intent = new Intent(activity, ImageFolderPreviewActivity.class);
         intent.putExtra(EXTRA_SELECTED_IMAGE_POSITION, currentPositionInFolder);
-        activity.startActivityForResult(intent, requestCode);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    activity, imageView,
+                    ViewCompat.getTransitionName(imageView));
+            activity.startActivityForResult(intent, requestCode, options.toBundle());
+        } else {
+            activity.startActivityForResult(intent, requestCode);
+        }
     }
 
     @Override

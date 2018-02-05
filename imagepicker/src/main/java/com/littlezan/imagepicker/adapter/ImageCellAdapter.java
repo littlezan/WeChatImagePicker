@@ -1,6 +1,7 @@
 package com.littlezan.imagepicker.adapter;
 
 import android.app.Activity;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -216,11 +217,12 @@ public class ImageCellAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             });
 
+            ViewCompat.setTransitionName(ivImg , activity.getString(R.string.transition_view_image));
             ivImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int currentPositionInFolder = ImagePicker.getInstance().getCurrentImageFolderItems().indexOf(imageItem);
-                    ImageFolderPreviewActivity.start(activity, ImagePickerActivity.REQUEST_CODE_FOLDER_PREVIEW, currentPositionInFolder);
+                    ImageFolderPreviewActivity.start(activity,ivImg,  ImagePickerActivity.REQUEST_CODE_FOLDER_PREVIEW, currentPositionInFolder);
                 }
             });
 

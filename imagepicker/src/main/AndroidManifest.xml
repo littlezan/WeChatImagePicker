@@ -29,10 +29,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/ImagePickerTheme" />
         <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity
             android:name=".ui.recrop.PreviewReCropImageActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"

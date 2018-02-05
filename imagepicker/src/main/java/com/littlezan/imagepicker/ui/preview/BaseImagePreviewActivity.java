@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
@@ -125,7 +126,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
     }
 
     private void initViewPager() {
-
+        ViewCompat.setTransitionName(viewPager,getString(R.string.transition_view_image));
         imagePageAdapter = new ImagePageAdapter(getImagePreviewSourceData());
         viewPager.setAdapter(imagePageAdapter);
         imagePageAdapter.setPhotoViewClickListener(new ImagePageAdapter.PhotoViewClickListener() {
