@@ -28,14 +28,10 @@ public class ImageFolderPreviewActivity extends BaseImagePreviewActivity {
     public static void start(Activity activity, ImageView imageView, int requestCode, int currentPositionInFolder) {
         Intent intent = new Intent(activity, ImageFolderPreviewActivity.class);
         intent.putExtra(EXTRA_SELECTED_IMAGE_POSITION, currentPositionInFolder);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    activity, imageView,
-                    ViewCompat.getTransitionName(imageView));
-            activity.startActivityForResult(intent, requestCode, options.toBundle());
-        } else {
-            activity.startActivityForResult(intent, requestCode);
-        }
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                activity, imageView,
+                ViewCompat.getTransitionName(imageView));
+        activity.startActivityForResult(intent, requestCode, options.toBundle());
     }
 
     @Override

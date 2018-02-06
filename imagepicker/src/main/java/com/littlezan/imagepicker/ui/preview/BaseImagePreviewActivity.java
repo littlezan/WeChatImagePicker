@@ -66,7 +66,7 @@ public abstract class BaseImagePreviewActivity extends BaseImageCropActivity imp
         setContentView(R.layout.activity_image_preview);
         this.llBottom = findViewById(R.id.ll_bottom);
         this.tvSelect = findViewById(R.id.tv_select);
-        android.widget.TextView tvCrop = findViewById(R.id.tv_crop);
+        TextView tvCrop = findViewById(R.id.tv_crop);
         this.recyclerView = findViewById(R.id.recycler_view);
         this.viewPager = findViewById(R.id.view_pager);
         this.toolbar = findViewById(R.id.toolbar);
