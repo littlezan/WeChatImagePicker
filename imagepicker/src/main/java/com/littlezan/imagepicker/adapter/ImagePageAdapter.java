@@ -25,6 +25,7 @@ import java.util.ArrayList;
  */
 public class ImagePageAdapter extends PagerAdapter {
 
+
     private ArrayList<ImageItem> images = new ArrayList<>();
     public PhotoViewClickListener listener;
 
@@ -44,6 +45,7 @@ public class ImagePageAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         Context context = container.getContext();
         PhotoView photoView = new PhotoView(context);
+        photoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         ImageItem imageItem = images.get(position);
         String path = imageItem.cropUri == null ? imageItem.path : imageItem.cropUri.getPath();
         ImagePicker.getInstance().getImageLoader().displayImage(context, path, photoView);
@@ -59,6 +61,7 @@ public class ImagePageAdapter extends PagerAdapter {
         container.addView(photoView);
         return photoView;
     }
+
 
     @Override
     public int getCount() {

@@ -16,7 +16,7 @@ import com.littlezan.imagepicker.loader.ImageLoader;
 import com.littlezan.imagepicker.ui.ImagePickerActivity;
 import com.littlezan.imagepicker.ui.preview.ImageSelectPreviewActivity;
 import com.littlezan.imagepicker.util.ImagePickerUtils;
-import com.littlezan.imagepicker.util.NougatTools;
+import com.littlezan.imagepicker.util.ImagePickerNougatTools;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -204,7 +204,7 @@ public class ImagePicker {
                   并且这样可以解决MIUI系统上拍照返回size为0的情况
                  */
 //                uri = FileProvider.getUriForFile(activity, ProviderUtil.getFileProviderName(activity), takeImageFile);
-                uri = NougatTools.formatFileProviderUri(activity, takeImageFile);
+                uri = ImagePickerNougatTools.formatFileProviderUri(activity, takeImageFile);
                 //加入uri权限 要不三星手机不能拍照
                 List<ResolveInfo> resInfoList = activity.getPackageManager().queryIntentActivities(takePictureIntent, PackageManager.MATCH_DEFAULT_ONLY);
                 for (ResolveInfo resolveInfo : resInfoList) {

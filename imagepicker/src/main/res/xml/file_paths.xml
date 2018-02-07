@@ -2,16 +2,16 @@
 <resources>
     <paths>
         <external-path
-            name="external-path"
+            name="image_picker_external-path"
             path="" />
         <files-path
-            name="files_path"
+            name="image_picker_files_path"
             path="" />
         <cache-path
-            name="cache-path"
+            name="image_picker_cache-path"
             path="" />
         <root-path
-            name="root-path"
+            name="image_picker_root-path"
             path="" />
     </paths>
 </resources>

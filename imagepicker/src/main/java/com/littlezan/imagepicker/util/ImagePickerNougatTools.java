@@ -20,9 +20,9 @@ import java.util.List;
  * @since 2017-02-28  14:59
  */
 
-public class NougatTools {
+public class ImagePickerNougatTools {
 
-    private static final String NOUGAT_FILE_PROVIDER = "com.littlezan.imagepicker.fileprovider";
+    private static final String NOUGAT_FILE_PROVIDER = ".fileprovider";
 
     /**
      * 将普通uri转化成适应7.0的content://形式  针对文件格式
@@ -38,7 +38,7 @@ public class NougatTools {
             Uri uri = Uri.fromFile(file);
             intent.setDataAndType(uri, intentType);
         } else {
-            Uri uri = FileProvider.getUriForFile(context, NOUGAT_FILE_PROVIDER, file);
+            Uri uri = FileProvider.getUriForFile(context, context.getPackageName()+NOUGAT_FILE_PROVIDER, file);
             // 表示文件类型
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -57,7 +57,7 @@ public class NougatTools {
      */
     public static Intent formatFileProviderPicIntent(Context context, File file, Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Uri uri = FileProvider.getUriForFile(context, NOUGAT_FILE_PROVIDER, file);
+            Uri uri = FileProvider.getUriForFile(context, context.getPackageName()+NOUGAT_FILE_PROVIDER, file);
             List<ResolveInfo> resInfoList = context.getPackageManager().queryIntentActivities(
                     intent, PackageManager.MATCH_DEFAULT_ONLY);
             for (ResolveInfo resolveInfo : resInfoList) {
@@ -81,7 +81,7 @@ public class NougatTools {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             uri = Uri.fromFile(file);
         } else {
-            uri = FileProvider.getUriForFile(context,NOUGAT_FILE_PROVIDER , file);
+            uri = FileProvider.getUriForFile(context,context.getPackageName()+NOUGAT_FILE_PROVIDER , file);
         }
         return uri;
     }
